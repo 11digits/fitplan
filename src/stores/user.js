@@ -20,16 +20,16 @@ export const useUserStore = defineStore('user', () => {
 
   async function ensureDefaultAdmin() {
     try {
-      await signInWithEmailAndPassword(auth, 'admin@admin.com', '1234')
+      await signInWithEmailAndPassword(auth, 'dorubrad@gmail.com', '123456')
       await set(dbRef(db, `users/${auth.currentUser.uid}`), {
-        email: 'admin@admin.com',
+        email: 'dorubrad@gmail.com',
         role: 'admin'
       })
     } catch (e) {
       if (e.code === 'auth/user-not-found') {
-        await createUserWithEmailAndPassword(auth, 'admin@admin.com', '1234')
+        await createUserWithEmailAndPassword(auth, 'dorubrad@gmail.com', '123456')
         await set(dbRef(db, `users/${auth.currentUser.uid}`), {
-          email: 'admin@admin.com',
+          email: 'dorubrad@gmail.com',
           role: 'admin'
         })
       }
