@@ -6,9 +6,11 @@ const userStore = useUserStore()
 </script>
 
 <template>
-  <div>
-    <nav class="bg-gray-800 text-white p-4 flex gap-4 items-center">
-      <RouterLink to="/" class="hover:underline">Home</RouterLink>
+  <div class="min-h-screen bg-slate-100">
+    <nav
+      class="bg-slate-800 text-white p-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4 shadow"
+    >
+      <RouterLink to="/" class="hover:underline font-semibold">Home</RouterLink>
       <RouterLink
         to="/admin"
         class="hover:underline"
@@ -19,9 +21,10 @@ const userStore = useUserStore()
         v-if="userStore.isAdmin"
         to="/admin/questionnaires"
         class="hover:underline"
-      >Add Questionnaire</RouterLink>
+        >Add Questionnaire</RouterLink
+      >
 
-      <div class="ml-auto flex gap-4 items-center">
+      <div class="sm:ml-auto flex gap-4 items-center">
         <RouterLink
           v-if="!userStore.authUser"
           to="/login"
