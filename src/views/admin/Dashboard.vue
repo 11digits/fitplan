@@ -1,5 +1,6 @@
 <script setup>
 import { onMounted, ref } from 'vue'
+import { RouterLink } from 'vue-router'
 import { db } from '../../firebase'
 import { ref as dbRef, get } from 'firebase/database'
 const counts = ref({ questionnaires: 0, responses: 0, users: 0 })
@@ -30,6 +31,11 @@ onMounted(async () => {
         <div class="text-lg font-semibold">Clients</div>
         <div class="text-3xl">{{ counts.users }}</div>
       </div>
+    </div>
+    <div class="mt-4">
+      <RouterLink to="/admin/questionnaires" class="text-blue-600 underline"
+        >New Questionnaire</RouterLink
+      >
     </div>
   </div>
 </template>
