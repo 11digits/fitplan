@@ -9,6 +9,7 @@ import AdminDashboard from '../views/admin/Dashboard.vue'
 import AdminQuestionnaire from '../views/admin/QuestionnaireBuilder.vue'
 import AdminResponses from '../views/admin/Responses.vue'
 import AdminUsers from '../views/admin/Users.vue'
+import AdminResults from '../views/admin/Results.vue'
 
 const routes = [
   { path: '/', name: 'questionnaires', component: Questionnaires },
@@ -37,6 +38,12 @@ const routes = [
     path: '/admin/users',
     name: 'admin-users',
     component: AdminUsers,
+    meta: { requiresAdmin: true }
+  },
+  {
+    path: '/admin/results',
+    name: 'admin-results',
+    component: AdminResults,
     meta: { requiresAdmin: true }
   }
 ]
