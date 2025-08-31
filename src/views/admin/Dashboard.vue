@@ -79,9 +79,12 @@ onMounted(async () => {
         </svg>
       </div>
     </div>
-    <div class="mt-4">
+    <div class="mt-4 space-x-4">
       <RouterLink to="/admin/questionnaires" class="text-blue-600 underline"
         >New Questionnaire</RouterLink
+      >
+      <RouterLink to="/admin/users" class="text-blue-600 underline"
+        >Manage Clients</RouterLink
       >
     </div>
   </div>
