@@ -1,11 +1,18 @@
-<script setup></script>
+<script setup>
+import { RouterLink, RouterView } from 'vue-router'
+import { useUserStore } from './stores/user'
+
+const userStore = useUserStore()
+</script>
 
 <template>
-  <h1>You did it!</h1>
-  <p>
-    Visit <a href="https://vuejs.org/" target="_blank" rel="noopener">vuejs.org</a> to read the
-    documentation
-  </p>
+  <div>
+    <nav class="bg-gray-800 text-white p-4 flex gap-4">
+      <RouterLink to="/" class="hover:underline">Home</RouterLink>
+      <RouterLink to="/admin" class="hover:underline">Admin</RouterLink>
+      <button class="ml-auto" @click="userStore.signInAnon" v-if="!userStore.user">Guest</button>
+      <span v-else>{{ userStore.user.email || 'Anon' }}</span>
+    </nav>
+    <RouterView />
+  </div>
 </template>
-
-<style scoped></style>
