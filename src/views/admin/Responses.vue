@@ -2,7 +2,10 @@
 import { ref, onMounted } from 'vue'
 import { db } from '../../firebase'
 import { ref as dbRef, get } from 'firebase/database'
+import { useQuestionnaireStore } from '../../stores/questionnaires'
 const responses = ref([])
+const selected = ref(null)
+const qStore = useQuestionnaireStore()
 
 onMounted(async () => {
   const snap = await get(dbRef(db, 'responses'))
@@ -10,6 +13,11 @@ onMounted(async () => {
     ? Object.entries(snap.val()).map(([id, v]) => ({ id, ...v }))
     : []
 })
+
+async function viewResponse(r) {
+  await qStore.fetchOne(r.questionnaireId)
+  selected.value = r
+}
 </script>
 
 <template>
@@ -22,6 +30,7 @@ onMounted(async () => {
           <th class="p-2 border">Questionnaire</th>
           <th class="p-2 border">User</th>
           <th class="p-2 border">Submitted</th>
+          <th class="p-2 border">Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -30,8 +39,22 @@ onMounted(async () => {
           <td class="p-2 border">{{ r.questionnaireId }}</td>
           <td class="p-2 border">{{ r.userId }}</td>
           <td class="p-2 border">{{ r.submittedAt ? new Date(r.submittedAt).toLocaleDateString() : 'Draft' }}</td>
+          <td class="p-2 border"><button class="text-blue-600 underline" @click="viewResponse(r)">View</button></td>
         </tr>
       </tbody>
     </table>
+
+    <div v-if="selected" class="mt-6">
+      <h2 class="text-xl font-bold mb-4">Response {{ selected.id }}</h2>
+      <div v-for="section in qStore.sections" :key="section.id" class="mb-4">
+        <h3 class="font-semibold mb-2">{{ section.title }}</h3>
+        <ul class="pl-4 list-disc">
+          <li v-for="q in qStore.questionsBySection(section.id)" :key="q.id">
+            <strong>{{ q.prompt }}:</strong>
+            {{ selected.answers?.[q.id]?.value || selected.answers?.[q.id] || '' }}
+          </li>
+        </ul>
+      </div>
+    </div>
   </div>
 </template>
