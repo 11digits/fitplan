@@ -23,6 +23,12 @@ const userStore = useUserStore()
         class="hover:underline"
         >Add Questionnaire</RouterLink
       >
+      <RouterLink
+        v-if="userStore.isAdmin"
+        to="/admin/results"
+        class="hover:underline"
+        >Results</RouterLink
+      >
 
       <div class="sm:ml-auto flex gap-4 items-center">
         <RouterLink

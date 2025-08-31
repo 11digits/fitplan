@@ -86,6 +86,9 @@ onMounted(async () => {
       <RouterLink to="/admin/users" class="text-blue-600 underline"
         >Manage Clients</RouterLink
       >
+      <RouterLink to="/admin/results" class="text-blue-600 underline"
+        >View Results</RouterLink
+      >
     </div>
   </div>
 </template>
