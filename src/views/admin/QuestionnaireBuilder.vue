@@ -3,7 +3,7 @@ import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import Swal from 'sweetalert2'
 import { db } from '../../firebase'
-import { ref as dbRef, push, set, update, get } from 'firebase/database'
+import { ref as dbRef, push, set, update, get, remove } from 'firebase/database'
 
 const route = useRoute()
 const router = useRouter()
@@ -11,6 +11,7 @@ const router = useRouter()
 const questionnaire = ref({ title: '', description: '', status: 'draft' })
 const sections = ref([])
 const newSectionTitle = ref('')
+const newSectionAdminOnly = ref(false)
 const questions = ref([])
 const newQuestions = ref({})
 
@@ -64,10 +65,11 @@ async function addSection() {
     questionnaireId: route.params.id,
     title: newSectionTitle.value,
     order: sections.value.length + 1,
-    adminOnly: false
+    adminOnly: newSectionAdminOnly.value
   })
-  sections.value.push({ id: newRef.key, title: newSectionTitle.value, order: sections.value.length + 1 })
+  sections.value.push({ id: newRef.key, title: newSectionTitle.value, order: sections.value.length + 1, adminOnly: newSectionAdminOnly.value })
   newSectionTitle.value = ''
+  newSectionAdminOnly.value = false
   Swal.fire('Added', 'Section added', 'success')
 }
 
@@ -102,6 +104,31 @@ async function addQuestion(sectionId) {
   newQuestions.value[sectionId] = ''
   Swal.fire('Added', 'Question added', 'success')
 }
+
+async function updateSectionAdmin(section) {
+  await update(dbRef(db, `sections/${section.id}`), { adminOnly: section.adminOnly })
+}
+
+async function deleteQuestionnaire() {
+  if (!route.params.id) return
+  const confirm = await Swal.fire({
+    title: 'Delete questionnaire?',
+    text: 'This will remove all sections and questions',
+    showCancelButton: true,
+    confirmButtonText: 'Delete',
+    icon: 'warning'
+  })
+  if (!confirm.isConfirmed) return
+  await remove(dbRef(db, `questionnaires/${route.params.id}`))
+  for (const s of sections.value) {
+    await remove(dbRef(db, `sections/${s.id}`))
+  }
+  for (const q of questions.value) {
+    await remove(dbRef(db, `questions/${q.id}`))
+  }
+  Swal.fire('Deleted', 'Questionnaire deleted', 'success')
+  router.push('/admin')
+}
 </script>
 
 <template>
@@ -122,12 +149,21 @@ async function addQuestion(sectionId) {
         <option value="published">Published</option>
       </select>
     </div>
-    <button class="bg-green-600 text-white px-4 py-2 rounded" @click="saveQuestionnaire">Save</button>
+    <div class="flex gap-2">
+      <button class="bg-green-600 text-white px-4 py-2 rounded" @click="saveQuestionnaire">Save</button>
+      <button v-if="route.params.id" class="bg-red-600 text-white px-4 py-2 rounded" @click="deleteQuestionnaire">Delete</button>
+    </div>
 
     <div class="mt-8">
       <h2 class="font-semibold mb-2">Sections</h2>
       <div v-for="s in sections" :key="s.id" class="mb-4 border rounded p-2">
-        <h3 class="font-medium mb-2">{{ s.title }}</h3>
+        <div class="flex items-center justify-between mb-2">
+          <h3 class="font-medium">{{ s.title }}</h3>
+          <label class="flex items-center text-sm gap-1">
+            <input type="checkbox" v-model="s.adminOnly" @change="updateSectionAdmin(s)" />
+            Admin only
+          </label>
+        </div>
         <ul class="mb-2 pl-4 list-disc">
           <li v-for="q in questionsBySection(s.id)" :key="q.id" class="mb-1">{{ q.prompt }}</li>
         </ul>
@@ -136,8 +172,11 @@ async function addQuestion(sectionId) {
           <button class="bg-blue-600 text-white px-3 rounded" @click="addQuestion(s.id)">Add</button>
         </div>
       </div>
-      <div class="flex gap-2 mt-4">
+      <div class="flex gap-2 mt-4 items-center">
         <input v-model="newSectionTitle" placeholder="New section title" class="border p-2 flex-1" />
+        <label class="flex items-center text-sm gap-1">
+          <input type="checkbox" v-model="newSectionAdminOnly" /> Admin only
+        </label>
         <button class="bg-blue-600 text-white px-3 rounded" @click="addSection">Add Section</button>
       </div>
     </div>
