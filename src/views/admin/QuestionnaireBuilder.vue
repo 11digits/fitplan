@@ -1,10 +1,12 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
+import Swal from 'sweetalert2'
 import { db } from '../../firebase'
 import { ref as dbRef, push, set, update, get } from 'firebase/database'
 
 const route = useRoute()
+const router = useRouter()
 
 const questionnaire = ref({ title: '', description: '', status: 'draft' })
 const sections = ref([])
@@ -30,14 +32,24 @@ async function saveQuestionnaire() {
       ...questionnaire.value,
       updatedAt: Date.now()
     })
+    Swal.fire('Saved', 'Questionnaire updated', 'success')
   } else {
     const newRef = push(dbRef(db, 'questionnaires'))
     await set(newRef, { ...questionnaire.value, createdAt: Date.now(), updatedAt: Date.now() })
+    Swal.fire('Created', 'Questionnaire created', 'success')
+    router.replace({ name: 'admin-questionnaire', params: { id: newRef.key } })
   }
 }
 
 async function addSection() {
-  if (!route.params.id || !newSectionTitle.value) return
+  if (!route.params.id) {
+    Swal.fire('Save first', 'Please save the questionnaire before adding sections', 'info')
+    return
+  }
+  if (!newSectionTitle.value) {
+    Swal.fire('Missing title', 'Section title is required', 'warning')
+    return
+  }
   const newRef = push(dbRef(db, 'sections'))
   await set(newRef, {
     questionnaireId: route.params.id,
@@ -47,6 +59,7 @@ async function addSection() {
   })
   sections.value.push({ id: newRef.key, title: newSectionTitle.value, order: sections.value.length + 1 })
   newSectionTitle.value = ''
+  Swal.fire('Added', 'Section added', 'success')
 }
 </script>
 
