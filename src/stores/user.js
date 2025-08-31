@@ -1,20 +1,67 @@
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
-import { onAuthStateChanged, signInAnonymously, signOut } from 'firebase/auth'
-import { auth } from '../firebase'
+import { ref, computed } from 'vue'
+import { auth, db } from '../firebase'
+import {
+  onAuthStateChanged,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  signOut
+} from 'firebase/auth'
+import { ref as dbRef, set, get } from 'firebase/database'
 
 export const useUserStore = defineStore('user', () => {
-  const user = ref(null)
+  const authUser = ref(null)
+  const profile = ref(null)
 
-  onAuthStateChanged(auth, (u) => (user.value = u))
-
-  function signInAnon() {
-    return signInAnonymously(auth)
+  async function fetchProfile(uid) {
+    const snap = await get(dbRef(db, `users/${uid}`))
+    profile.value = snap.exists() ? snap.val() : null
   }
 
-  function signOutUser() {
+  async function ensureDefaultAdmin() {
+    try {
+      await signInWithEmailAndPassword(auth, 'admin@admin.com', '1234')
+      await set(dbRef(db, `users/${auth.currentUser.uid}`), {
+        email: 'admin@admin.com',
+        role: 'admin'
+      })
+    } catch (e) {
+      if (e.code === 'auth/user-not-found') {
+        await createUserWithEmailAndPassword(auth, 'admin@admin.com', '1234')
+        await set(dbRef(db, `users/${auth.currentUser.uid}`), {
+          email: 'admin@admin.com',
+          role: 'admin'
+        })
+      }
+    } finally {
+      if (auth.currentUser) await signOut(auth)
+    }
+  }
+
+  onAuthStateChanged(auth, async (u) => {
+    authUser.value = u
+    if (u) await fetchProfile(u.uid)
+    else profile.value = null
+  })
+
+  ensureDefaultAdmin()
+
+  async function register(email, password) {
+    const cred = await createUserWithEmailAndPassword(auth, email, password)
+    await set(dbRef(db, `users/${cred.user.uid}`), { email, role: 'customer' })
+    await fetchProfile(cred.user.uid)
+  }
+
+  async function login(email, password) {
+    const cred = await signInWithEmailAndPassword(auth, email, password)
+    await fetchProfile(cred.user.uid)
+  }
+
+  function logout() {
     return signOut(auth)
   }
 
-  return { user, signInAnon, signOut: signOutUser }
+  const isAdmin = computed(() => profile.value?.role === 'admin')
+
+  return { authUser, profile, isAdmin, register, login, logout }
 })

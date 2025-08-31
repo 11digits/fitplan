@@ -21,7 +21,7 @@ export const useResponseStore = defineStore('responses', () => {
     responseId.value = resRef.key
     await set(resRef, {
       questionnaireId,
-      userId: userStore.user?.uid || null,
+      userId: userStore.authUser?.uid || null,
       createdAt: Date.now(),
       submittedAt: null,
       answers: {}
