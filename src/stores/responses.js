@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
+import { db } from '../firebase'
 import {
-  getDatabase,
   ref as dbRef,
   push,
   set,
@@ -12,7 +12,6 @@ import html2canvas from 'html2canvas'
 import { useUserStore } from './user'
 
 export const useResponseStore = defineStore('responses', () => {
-  const db = getDatabase()
   const userStore = useUserStore()
   const responseId = ref(null)
   const answers = ref({})

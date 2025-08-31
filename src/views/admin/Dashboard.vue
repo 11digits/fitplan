@@ -1,8 +1,7 @@
 <script setup>
 import { onMounted, ref } from 'vue'
-import { getDatabase, ref as dbRef, get } from 'firebase/database'
-
-const db = getDatabase()
+import { db } from '../../firebase'
+import { ref as dbRef, get } from 'firebase/database'
 const counts = ref({ questionnaires: 0, responses: 0, users: 0 })
 
 onMounted(async () => {

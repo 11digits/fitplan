@@ -1,10 +1,10 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
-import { getDatabase, ref as dbRef, push, set, update, get } from 'firebase/database'
+import { db } from '../../firebase'
+import { ref as dbRef, push, set, update, get } from 'firebase/database'
 
 const route = useRoute()
-const db = getDatabase()
 
 const questionnaire = ref({ title: '', description: '', status: 'draft' })
 const sections = ref([])

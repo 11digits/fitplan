@@ -1,9 +1,9 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { getAuth, onAuthStateChanged, signInAnonymously, signOut } from 'firebase/auth'
+import { onAuthStateChanged, signInAnonymously, signOut } from 'firebase/auth'
+import { auth } from '../firebase'
 
 export const useUserStore = defineStore('user', () => {
-  const auth = getAuth()
   const user = ref(null)
 
   onAuthStateChanged(auth, (u) => (user.value = u))

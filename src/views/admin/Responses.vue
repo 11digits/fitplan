@@ -1,8 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import { getDatabase, ref as dbRef, get } from 'firebase/database'
-
-const db = getDatabase()
+import { db } from '../../firebase'
+import { ref as dbRef, get } from 'firebase/database'
 const responses = ref([])
 
 onMounted(async () => {

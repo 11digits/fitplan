@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
+import { db } from '../firebase'
 import {
-  getDatabase,
   ref as dbRef,
   get,
   query,
@@ -10,7 +10,6 @@ import {
 } from 'firebase/database'
 
 export const useQuestionnaireStore = defineStore('questionnaires', () => {
-  const db = getDatabase()
   const published = ref([])
   const current = ref(null)
   const sections = ref([])
