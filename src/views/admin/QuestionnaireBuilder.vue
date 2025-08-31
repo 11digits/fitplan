@@ -11,6 +11,8 @@ const router = useRouter()
 const questionnaire = ref({ title: '', description: '', status: 'draft' })
 const sections = ref([])
 const newSectionTitle = ref('')
+const questions = ref([])
+const newQuestions = ref({})
 
 onMounted(async () => {
   if (route.params.id) {
@@ -21,6 +23,13 @@ onMounted(async () => {
       sections.value = Object.entries(sSnap.val())
         .filter(([id, s]) => s.questionnaireId === route.params.id)
         .map(([id, s]) => ({ id, ...s }))
+        .sort((a, b) => a.order - b.order)
+    }
+    const qsSnap = await get(dbRef(db, 'questions'))
+    if (qsSnap.exists()) {
+      questions.value = Object.entries(qsSnap.val())
+        .map(([id, q]) => ({ id, ...q }))
+        .filter((q) => sections.value.some((s) => s.id === q.sectionId))
         .sort((a, b) => a.order - b.order)
     }
   }
@@ -61,6 +70,38 @@ async function addSection() {
   newSectionTitle.value = ''
   Swal.fire('Added', 'Section added', 'success')
 }
+
+function questionsBySection(sectionId) {
+  return questions.value.filter((q) => q.sectionId === sectionId)
+}
+
+async function addQuestion(sectionId) {
+  if (!route.params.id) {
+    Swal.fire('Save first', 'Please save the questionnaire before adding questions', 'info')
+    return
+  }
+  const prompt = newQuestions.value[sectionId]
+  if (!prompt) {
+    Swal.fire('Missing prompt', 'Question prompt is required', 'warning')
+    return
+  }
+  const newRef = push(dbRef(db, 'questions'))
+  await set(newRef, {
+    sectionId,
+    prompt,
+    order: questionsBySection(sectionId).length + 1,
+    type: 'text'
+  })
+  questions.value.push({
+    id: newRef.key,
+    sectionId,
+    prompt,
+    order: questionsBySection(sectionId).length + 1,
+    type: 'text'
+  })
+  newQuestions.value[sectionId] = ''
+  Swal.fire('Added', 'Question added', 'success')
+}
 </script>
 
 <template>
@@ -85,12 +126,19 @@ async function addSection() {
 
     <div class="mt-8">
       <h2 class="font-semibold mb-2">Sections</h2>
-      <ul class="mb-4">
-        <li v-for="s in sections" :key="s.id" class="mb-2">{{ s.title }}</li>
-      </ul>
-      <div class="flex gap-2">
+      <div v-for="s in sections" :key="s.id" class="mb-4 border rounded p-2">
+        <h3 class="font-medium mb-2">{{ s.title }}</h3>
+        <ul class="mb-2 pl-4 list-disc">
+          <li v-for="q in questionsBySection(s.id)" :key="q.id" class="mb-1">{{ q.prompt }}</li>
+        </ul>
+        <div class="flex gap-2">
+          <input v-model="newQuestions[s.id]" placeholder="New question prompt" class="border p-2 flex-1" />
+          <button class="bg-blue-600 text-white px-3 rounded" @click="addQuestion(s.id)">Add</button>
+        </div>
+      </div>
+      <div class="flex gap-2 mt-4">
         <input v-model="newSectionTitle" placeholder="New section title" class="border p-2 flex-1" />
-        <button class="bg-blue-600 text-white px-3 rounded" @click="addSection">Add</button>
+        <button class="bg-blue-600 text-white px-3 rounded" @click="addSection">Add Section</button>
       </div>
     </div>
   </div>
