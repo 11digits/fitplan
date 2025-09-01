@@ -29,7 +29,7 @@ async function viewResponse(r) {
           <th class="p-2 border">ID</th>
           <th class="p-2 border">Questionnaire</th>
           <th class="p-2 border">User</th>
-          <th class="p-2 border">Submitted</th>
+          <th class="p-2 border">Status</th>
           <th class="p-2 border">Actions</th>
         </tr>
       </thead>
@@ -38,7 +38,15 @@ async function viewResponse(r) {
           <td class="p-2 border">{{ r.id }}</td>
           <td class="p-2 border">{{ r.questionnaireId }}</td>
           <td class="p-2 border">{{ r.userId }}</td>
-          <td class="p-2 border">{{ r.submittedAt ? new Date(r.submittedAt).toLocaleDateString() : 'Draft' }}</td>
+          <td class="p-2 border">
+            {{
+              r.adminAnswers && Object.keys(r.adminAnswers).length > 0
+                ? 'admin'
+                : r.submittedAt
+                ? 'customer'
+                : 'none'
+            }}
+          </td>
           <td class="p-2 border"><button class="text-blue-600 underline" @click="viewResponse(r)">View</button></td>
         </tr>
       </tbody>
@@ -51,7 +59,11 @@ async function viewResponse(r) {
         <ul class="pl-4 list-disc">
           <li v-for="q in qStore.questionsBySection(section.id)" :key="q.id">
             <strong>{{ q.prompt }}:</strong>
-            {{ selected.answers?.[q.id]?.value || selected.answers?.[q.id] || '' }}
+            {{
+              section.adminOnly
+                ? selected.adminAnswers?.[q.id]?.value || selected.adminAnswers?.[q.id] || ''
+                : selected.answers?.[q.id]?.value || selected.answers?.[q.id] || ''
+            }}
           </li>
         </ul>
       </div>

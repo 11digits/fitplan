@@ -4,7 +4,7 @@ import { useUserStore } from '../stores/user'
 import Questionnaires from '../views/Questionnaires.vue'
 import QuestionnaireRunner from '../views/QuestionnaireRunner.vue'
 import Login from '../views/Login.vue'
-import Register from '../views/Register.vue'
+import Results from '../views/Results.vue'
 import AdminDashboard from '../views/admin/Dashboard.vue'
 import AdminQuestionnaire from '../views/admin/QuestionnaireBuilder.vue'
 import AdminResponses from '../views/admin/Responses.vue'
@@ -15,7 +15,7 @@ const routes = [
   { path: '/', name: 'questionnaires', component: Questionnaires },
   { path: '/run/:id', name: 'run', component: QuestionnaireRunner },
   { path: '/login', name: 'login', component: Login },
-  { path: '/register', name: 'register', component: Register },
+  { path: '/results', name: 'results', component: Results },
   {
     path: '/admin',
     name: 'admin-dashboard',
