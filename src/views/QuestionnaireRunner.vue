@@ -48,11 +48,21 @@ async function begin() {
       return
     }
   } else if (!userSnap.exists()) {
-    Swal.fire(
-      'Info',
-      'Nu există cont pentru acest email. Continuați ca invitat.',
-      'info'
-    )
+    const { value: password } = await Swal.fire({
+      title: 'Creați cont',
+      text: 'Nu există cont pentru acest email. Creați o parolă pentru a continua.',
+      input: 'password',
+      inputPlaceholder: 'Parolă',
+      inputAttributes: { autocapitalize: 'off', autocomplete: 'new-password' },
+      showCancelButton: true
+    })
+    if (!password) return
+    try {
+      await userStore.register(email.value, password)
+    } catch (e) {
+      Swal.fire('Înregistrare eșuată', e.message, 'error')
+      return
+    }
   }
 
   await rStore.start(route.params.id, email.value)

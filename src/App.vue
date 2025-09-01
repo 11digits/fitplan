@@ -1,8 +1,15 @@
 <script setup>
 import { RouterLink, RouterView } from 'vue-router'
+import { useRouter } from 'vue-router'
 import { useUserStore } from './stores/user'
 
 const userStore = useUserStore()
+const router = useRouter()
+
+async function logout() {
+  await userStore.logout()
+  router.push('/login')
+}
 </script>
 
 <template>
@@ -41,7 +48,7 @@ const userStore = useUserStore()
         >
         <button
           v-else
-          @click="userStore.logout"
+          @click="logout"
           class="hover:underline"
         >Logout</button>
         <span v-if="userStore.authUser">{{ userStore.profile?.email }}</span>
