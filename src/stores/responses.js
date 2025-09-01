@@ -15,27 +15,41 @@ export const useResponseStore = defineStore('responses', () => {
   const userStore = useUserStore()
   const qStore = useQuestionnaireStore()
   const responseId = ref(null)
+  const customerEmail = ref('')
   const answers = ref({})
+  const adminAnswers = ref({})
 
-  async function start(questionnaireId) {
+  async function start(questionnaireId, email) {
     const resRef = push(dbRef(db, 'responses'))
     responseId.value = resRef.key
+    customerEmail.value = email
+    answers.value = {}
+    adminAnswers.value = {}
     await set(resRef, {
       questionnaireId,
       userId: userStore.authUser?.uid || null,
+      customerEmail: email,
       createdAt: Date.now(),
       submittedAt: null,
-      answers: {}
+      answers: {},
+      adminAnswers: {}
     })
   }
 
-  async function save(questionId, value) {
+  async function save(questionId, value, adminOnly = false) {
     if (!responseId.value) return
-    answers.value[questionId] = value
-    await update(dbRef(db, `responses/${responseId.value}/answers/${questionId}`), {
-      value,
-      updatedAt: Date.now()
-    })
+    const target = adminOnly ? adminAnswers : answers
+    target.value[questionId] = value
+    await update(
+      dbRef(
+        db,
+        `responses/${responseId.value}/${adminOnly ? 'adminAnswers' : 'answers'}/${questionId}`
+      ),
+      {
+        value,
+        updatedAt: Date.now()
+      }
+    )
   }
 
   async function submit() {
@@ -63,7 +77,8 @@ export const useResponseStore = defineStore('responses', () => {
       y += 8
       doc.setFont(undefined, 'normal')
       for (const q of qStore.questionsBySection(section.id)) {
-        const ans = answers.value[q.id] ?? ''
+        const store = section.adminOnly ? adminAnswers.value : answers.value
+        const ans = store[q.id] ?? ''
         const line = `${q.prompt}: ${ans}`
         const lines = doc.splitTextToSize(line, 190)
         for (const l of lines) {
@@ -80,5 +95,13 @@ export const useResponseStore = defineStore('responses', () => {
     doc.save('response.pdf')
   }
 
-  return { responseId, answers, start, save, submit }
+  return {
+    responseId,
+    customerEmail,
+    answers,
+    adminAnswers,
+    start,
+    save,
+    submit
+  }
 })
