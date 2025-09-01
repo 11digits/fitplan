@@ -44,22 +44,25 @@ export const useUserStore = defineStore('user', () => {
     }
   }
 
-  onAuthStateChanged(auth, async (u) => {
-    authUser.value = u
-    if (u) {
-      localStorage.setItem(
-        'authUser',
-        JSON.stringify({ uid: u.uid, email: u.email })
-      )
-      await fetchProfile(u.uid)
-    } else {
-      profile.value = null
-      localStorage.removeItem('authUser')
-      localStorage.removeItem('profile')
-    }
-  })
+  async function initAuth() {
+    await ensureDefaultAdmin()
+    onAuthStateChanged(auth, async (u) => {
+      authUser.value = u
+      if (u) {
+        localStorage.setItem(
+          'authUser',
+          JSON.stringify({ uid: u.uid, email: u.email })
+        )
+        await fetchProfile(u.uid)
+      } else {
+        profile.value = null
+        localStorage.removeItem('authUser')
+        localStorage.removeItem('profile')
+      }
+    })
+  }
 
-  ensureDefaultAdmin()
+  initAuth()
 
   async function register(email, password) {
     const cred = await createUserWithEmailAndPassword(auth, email, password)
