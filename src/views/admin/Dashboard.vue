@@ -17,11 +17,11 @@ onMounted(async () => {
 
 <template>
   <div class="p-4">
-    <h1 class="text-2xl font-bold mb-4">Admin Dashboard</h1>
+    <h1 class="text-2xl font-bold mb-4">Panou administrare</h1>
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
       <div class="p-4 rounded shadow flex items-center justify-between text-white bg-emerald-500">
         <div>
-          <div class="text-sm">Questionnaires</div>
+          <div class="text-sm">Chestionare</div>
           <div class="text-3xl font-bold">{{ counts.questionnaires }}</div>
         </div>
         <svg
@@ -45,7 +45,7 @@ onMounted(async () => {
 
       <div class="p-4 rounded shadow flex items-center justify-between text-white bg-rose-500">
         <div>
-          <div class="text-sm">Responses</div>
+          <div class="text-sm">Răspunsuri</div>
           <div class="text-3xl font-bold">{{ counts.responses }}</div>
         </div>
         <svg
@@ -64,7 +64,7 @@ onMounted(async () => {
 
       <div class="p-4 rounded shadow flex items-center justify-between text-white bg-amber-500">
         <div>
-          <div class="text-sm">Clients</div>
+          <div class="text-sm">Clienți</div>
           <div class="text-3xl font-bold">{{ counts.users }}</div>
         </div>
         <svg
@@ -81,13 +81,13 @@ onMounted(async () => {
     </div>
     <div class="mt-4 space-x-4">
       <RouterLink to="/admin/questionnaires" class="text-blue-600 underline"
-        >New Questionnaire</RouterLink
+        >Chestionar nou</RouterLink
       >
       <RouterLink to="/admin/users" class="text-blue-600 underline"
-        >Manage Clients</RouterLink
+        >Gestionează clienți</RouterLink
       >
       <RouterLink to="/admin/results" class="text-blue-600 underline"
-        >View Results</RouterLink
+        >Vezi rezultate</RouterLink
       >
     </div>
   </div>

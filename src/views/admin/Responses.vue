@@ -22,15 +22,15 @@ async function viewResponse(r) {
 
 <template>
   <div class="p-4">
-    <h1 class="text-2xl font-bold mb-4">Responses</h1>
+    <h1 class="text-2xl font-bold mb-4">Răspunsuri</h1>
     <table class="min-w-full text-left">
       <thead>
         <tr>
           <th class="p-2 border">ID</th>
-          <th class="p-2 border">Questionnaire</th>
-          <th class="p-2 border">User</th>
-          <th class="p-2 border">Status</th>
-          <th class="p-2 border">Actions</th>
+          <th class="p-2 border">Chestionar</th>
+          <th class="p-2 border">Utilizator</th>
+          <th class="p-2 border">Stare</th>
+          <th class="p-2 border">Acțiuni</th>
         </tr>
       </thead>
       <tbody>
@@ -41,19 +41,19 @@ async function viewResponse(r) {
           <td class="p-2 border">
             {{
               r.adminAnswers && Object.keys(r.adminAnswers).length > 0
-                ? 'admin'
+                ? 'administrator'
                 : r.submittedAt
-                ? 'customer'
-                : 'none'
+                ? 'client'
+                : 'niciunul'
             }}
           </td>
-          <td class="p-2 border"><button class="text-blue-600 underline" @click="viewResponse(r)">View</button></td>
+          <td class="p-2 border"><button class="text-blue-600 underline" @click="viewResponse(r)">Vezi</button></td>
         </tr>
       </tbody>
     </table>
 
     <div v-if="selected" class="mt-6">
-      <h2 class="text-xl font-bold mb-4">Response {{ selected.id }}</h2>
+      <h2 class="text-xl font-bold mb-4">Răspuns {{ selected.id }}</h2>
       <div v-for="section in qStore.sections" :key="section.id" class="mb-4">
         <h3 class="font-semibold mb-2">{{ section.title }}</h3>
         <ul class="pl-4 list-disc">

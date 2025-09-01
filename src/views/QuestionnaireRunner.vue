@@ -1,6 +1,6 @@
 <script setup>
 import { onMounted, computed, ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useQuestionnaireStore } from '../stores/questionnaires'
 import { useResponseStore } from '../stores/responses'
 import { useUserStore } from '../stores/user'
@@ -9,6 +9,7 @@ import { db } from '../firebase'
 import { ref as dbRef, query, orderByChild, equalTo, get } from 'firebase/database'
 
 const route = useRoute()
+const router = useRouter()
 const qStore = useQuestionnaireStore()
 const rStore = useResponseStore()
 const userStore = useUserStore()
@@ -73,8 +74,10 @@ function saveAnswer(id, value, adminOnly) {
   rStore.save(id, value, adminOnly)
 }
 
-function submit() {
-  rStore.submit()
+async function submit() {
+  await rStore.submit()
+  await Swal.fire('Chestionar salvat', 'Puteți imprima sau modifica din lista de chestionare.', 'success')
+  router.push({ name: 'questionnaires' })
 }
 
 const visibleSections = computed(() =>

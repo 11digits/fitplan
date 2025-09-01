@@ -44,24 +44,24 @@ const aggregated = computed(() => {
 
 <template>
   <div class="p-4">
-    <h1 class="text-2xl font-bold mb-4">Results</h1>
+    <h1 class="text-2xl font-bold mb-4">Rezultate</h1>
     <div class="max-w-xl grid gap-4 sm:grid-cols-2">
       <div>
-        <label class="block text-sm mb-1">Questionnaire</label>
+        <label class="block text-sm mb-1">Chestionar</label>
         <select
           v-model="selectedQuestionnaire"
           @change="load"
           class="border p-2 rounded w-full"
         >
-          <option value="" disabled>Select...</option>
+          <option value="" disabled>Selectează...</option>
           <option v-for="q in questionnaires" :key="q.id" :value="q.id">{{ q.title }}</option>
         </select>
       </div>
     </div>
 
     <div v-if="selectedQuestionnaire" class="mt-8">
-      <h2 class="text-xl font-semibold mb-4">Aggregated Responses</h2>
-      <div v-if="responses.length === 0" class="text-slate-600">No responses yet.</div>
+      <h2 class="text-xl font-semibold mb-4">Răspunsuri agregate</h2>
+      <div v-if="responses.length === 0" class="text-slate-600">Niciun răspuns deocamdată.</div>
       <div v-for="q in qStore.questions" :key="q.id" class="mb-6">
         <h3 class="font-medium mb-2">{{ q.prompt }}</h3>
         <ul class="pl-4 list-disc">
