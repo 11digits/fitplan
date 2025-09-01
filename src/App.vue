@@ -17,10 +17,10 @@ async function logout() {
     <nav
       class="bg-slate-800 text-white p-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4 shadow"
     >
-      <template v-if="userStore.authUser">
-        <RouterLink to="/" class="hover:underline font-semibold text-xl">
+      <RouterLink to="/" class="hover:underline font-semibold text-xl">
           Fit Plan - Alexandra Brad PT
-        </RouterLink>
+      </RouterLink>
+      <template v-if="userStore.authUser">        
         <RouterLink
           to="/admin"
           class="hover:underline"
