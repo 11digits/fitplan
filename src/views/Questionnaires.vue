@@ -25,19 +25,34 @@ async function loadStatuses() {
   }
   statuses.value = map
 }
+
+function statusText(v) {
+  if (v === 'admin') return 'admin'
+  if (v === 'customer') return 'completat'
+  return 'necompletat'
+}
 </script>
 
 <template>
   <div class="p-4">
-    <h1 class="text-2xl font-bold mb-4">Start Questionnaire</h1>
+    <h1 class="text-2xl font-bold mb-4">Începe chestionarul</h1>
     <div class="mb-4 max-w-sm">
       <label class="block mb-1">Email</label>
-      <input v-model="email" type="email" class="border p-2 rounded w-full mb-2" />
+      <input
+        v-model="email"
+        type="email"
+        class="border border-gray-300 rounded w-full mb-2 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
       <div class="flex items-center gap-4">
-        <button class="bg-blue-600 text-white px-4 py-2 rounded" @click="loadStatuses">
-          Load
+        <button
+          class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+          @click="loadStatuses"
+        >
+          Încarcă
         </button>
-        <RouterLink to="/results" class="text-blue-600 underline">Your Results</RouterLink>
+        <RouterLink to="/results" class="text-blue-600 underline"
+          >Rezultatele tale</RouterLink
+        >
       </div>
     </div>
     <ul>
@@ -48,7 +63,7 @@ async function loadStatuses() {
         >
           {{ q.title }}
         </RouterLink>
-        <span class="ml-2 text-sm text-slate-600">{{ statuses[q.id] || 'none' }}</span>
+        <span class="ml-2 text-sm text-slate-600">{{ statusText(statuses[q.id]) }}</span>
       </li>
     </ul>
   </div>

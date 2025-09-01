@@ -63,16 +63,27 @@ async function print(r) {
 
 <template>
   <div class="p-4">
-    <h1 class="text-2xl font-bold mb-4">Your Results</h1>
+    <h1 class="text-2xl font-bold mb-4">Rezultatele tale</h1>
     <div class="mb-4 max-w-sm">
       <label class="block mb-1">Email</label>
-      <input v-model="email" type="email" class="border p-2 rounded w-full mb-2" />
-      <button class="bg-blue-600 text-white px-4 py-2 rounded" @click="load">
-        Load
+      <input
+        v-model="email"
+        type="email"
+        class="border border-gray-300 rounded w-full mb-2 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
+      <button
+        class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+        @click="load"
+      >
+        Încarcă
       </button>
     </div>
     <ul>
-      <li v-for="r in responses" :key="r.id" class="mb-2 flex justify-between items-center">
+      <li
+        v-for="r in responses"
+        :key="r.id"
+        class="mb-2 flex justify-between items-center"
+      >
         <span>{{ titleOf(r.questionnaireId) }}</span>
         <button class="text-blue-600 underline" @click="print(r)">PDF</button>
       </li>

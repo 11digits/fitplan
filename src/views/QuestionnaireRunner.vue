@@ -14,10 +14,7 @@ const started = ref(false)
 
 onMounted(async () => {
   await qStore.fetchOne(route.params.id)
-  if (userStore.isAdmin) {
-    await rStore.start(route.params.id, userStore.profile?.email || '')
-    started.value = true
-  } else if (email.value) {
+  if (email.value) {
     await rStore.start(route.params.id, email.value)
     started.value = true
   }
@@ -44,11 +41,18 @@ const visibleSections = computed(() =>
 
 <template>
   <div class="p-4" v-if="qStore.current">
-    <div v-if="!started && !userStore.isAdmin" class="mb-4 max-w-sm">
-      <label class="block mb-1">Email</label>
-      <input v-model="email" type="email" class="border p-2 rounded w-full mb-2" />
-      <button class="bg-blue-600 text-white px-4 py-2 rounded" @click="begin">
-        Start
+    <div v-if="!started" class="mb-4 max-w-sm">
+      <label class="block mb-1">Email participant</label>
+      <input
+        v-model="email"
+        type="email"
+        class="border border-gray-300 rounded w-full mb-2 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
+      <button
+        class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+        @click="begin"
+      >
+        Începe
       </button>
     </div>
     <div v-else>
@@ -67,17 +71,17 @@ const visibleSections = computed(() =>
           <label class="block mb-1">{{ question.prompt }}</label>
           <input
             type="text"
-            class="border rounded w-full p-2"
+            class="border border-gray-300 rounded w-full p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             :value="section.adminOnly ? rStore.adminAnswers[question.id] : rStore.answers[question.id]"
             @input="saveAnswer(question.id, $event.target.value, section.adminOnly)"
           />
         </div>
       </div>
       <button
-        class="bg-blue-600 text-white px-4 py-2 rounded"
+        class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
         @click="submit"
       >
-        Submit
+        Trimite
       </button>
     </div>
   </div>
