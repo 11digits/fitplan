@@ -10,7 +10,9 @@ const userStore = useUserStore()
     <nav
       class="bg-slate-800 text-white p-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4 shadow"
     >
-      <RouterLink to="/" class="hover:underline font-semibold">Home</RouterLink>
+      <RouterLink to="/" class="hover:underline font-semibold text-xl">
+        Fit Plan - Alexandra Brad PT
+      </RouterLink>
       <RouterLink
         to="/admin"
         class="hover:underline"
@@ -36,12 +38,6 @@ const userStore = useUserStore()
           to="/login"
           class="hover:underline"
           >Login</RouterLink
-        >
-        <RouterLink
-          v-if="!userStore.authUser"
-          to="/register"
-          class="hover:underline"
-          >Register</RouterLink
         >
         <button
           v-else
