@@ -16,6 +16,7 @@ const questions = ref([])
 const newQuestions = ref({})
 const newQuestionTypes = ref({})
 const newQuestionOptions = ref({})
+const editingQuestions = ref({})
 
 onMounted(async () => {
   if (route.params.id) {
@@ -84,6 +85,16 @@ function questionsBySection(sectionId) {
   return questions.value.filter((q) => q.sectionId === sectionId)
 }
 
+async function updateSectionTitle(section) {
+  await update(dbRef(db, `sections/${section.id}`), { title: section.title })
+}
+
+async function deleteSection(section) {
+  await remove(dbRef(db, `sections/${section.id}`))
+  sections.value = sections.value.filter((s) => s.id !== section.id)
+  questions.value = questions.value.filter((q) => q.sectionId !== section.id)
+}
+
 async function addQuestion(sectionId) {
   if (!route.params.id) {
     Swal.fire('Salvați mai întâi', 'Vă rugăm să salvați chestionarul înainte de a adăuga întrebări', 'info')
@@ -117,6 +128,39 @@ async function addQuestion(sectionId) {
   newQuestionTypes.value[sectionId] = 'text'
   newQuestionOptions.value[sectionId] = ''
   Swal.fire('Adăugat', 'Întrebare adăugată', 'success')
+}
+
+function startEditQuestion(q) {
+  editingQuestions.value[q.id] = {
+    prompt: q.prompt,
+    type: q.type,
+    options: q.options.join(', ')
+  }
+}
+
+function cancelEditQuestion(q) {
+  delete editingQuestions.value[q.id]
+}
+
+async function saveQuestion(q) {
+  const data = editingQuestions.value[q.id]
+  if (!data) return
+  const options =
+    data.type === 'text'
+      ? []
+      : data.options.split(',').map((o) => o.trim()).filter((o) => o)
+  await update(dbRef(db, `questions/${q.id}`), {
+    prompt: data.prompt,
+    type: data.type,
+    options
+  })
+  Object.assign(q, { prompt: data.prompt, type: data.type, options })
+  delete editingQuestions.value[q.id]
+}
+
+async function deleteQuestion(q) {
+  await remove(dbRef(db, `questions/${q.id}`))
+  questions.value = questions.value.filter((x) => x.id !== q.id)
 }
 
 async function updateSectionAdmin(section) {
@@ -175,12 +219,17 @@ async function deleteQuestionnaire() {
       <div class="mt-8">
         <h2 class="font-semibold mb-2">Secțiuni</h2>
         <div v-for="s in sections" :key="s.id" class="mb-4 border rounded p-2">
-          <div class="flex items-center justify-between mb-2">
-            <h3 class="font-medium">{{ s.title }}</h3>
+          <div class="flex items-center justify-between mb-2 gap-2">
+            <input
+              v-model="s.title"
+              @change="updateSectionTitle(s)"
+              class="font-medium border-b flex-1"
+            />
             <label class="flex items-center text-sm gap-1">
               <input type="checkbox" v-model="s.adminOnly" @change="updateSectionAdmin(s)" />
               Doar admin
             </label>
+            <button class="text-red-600 text-xs" @click="deleteSection(s)">Șterge</button>
           </div>
           <ul class="mb-2 pl-4 list-disc">
             <li
@@ -188,8 +237,32 @@ async function deleteQuestionnaire() {
               :key="q.id"
               class="mb-1"
             >
-              {{ q.prompt }}
-              <span class="text-xs text-slate-600">({{ q.type }})</span>
+              <div v-if="!editingQuestions[q.id]" class="flex items-center gap-2">
+                <span>
+                  {{ q.prompt }}
+                  <span class="text-xs text-slate-600">({{ q.type }})</span>
+                </span>
+                <button class="text-blue-600 text-xs" @click="startEditQuestion(q)">Editează</button>
+                <button class="text-red-600 text-xs" @click="deleteQuestion(q)">Șterge</button>
+              </div>
+              <div v-else class="flex flex-col gap-1">
+                <input v-model="editingQuestions[q.id].prompt" class="border p-1" />
+                <select v-model="editingQuestions[q.id].type" class="border p-1">
+                  <option value="text">Text</option>
+                  <option value="radio">Opțiuni (radio)</option>
+                  <option value="checkbox">Opțiuni multiple</option>
+                </select>
+                <input
+                  v-if="editingQuestions[q.id].type !== 'text'"
+                  v-model="editingQuestions[q.id].options"
+                  placeholder="Opțiuni separate prin virgulă"
+                  class="border p-1"
+                />
+                <div class="flex gap-2">
+                  <button class="bg-green-600 text-white px-2 rounded text-xs" @click="saveQuestion(q)">Salvează</button>
+                  <button class="text-xs" @click="cancelEditQuestion(q)">Renunță</button>
+                </div>
+              </div>
             </li>
           </ul>
           <div class="flex flex-col sm:flex-row gap-2">
