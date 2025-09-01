@@ -18,6 +18,10 @@ const incomplete = computed(() =>
   qStore.published.filter((q) => !statuses.value[q.id])
 )
 
+const started = computed(() =>
+  qStore.published.filter((q) => statuses.value[q.id])
+)
+
 onMounted(() => {
   qStore.fetchPublished()
   if (email.value) loadStatuses()
@@ -128,7 +132,7 @@ async function print(r) {
             </tr>
           </thead>
           <tbody>
-            <tr v-for="q in qStore.published" :key="q.id" class="border-b last:border-b-0">
+            <tr v-for="q in started" :key="q.id" class="border-b last:border-b-0">
               <td class="p-2">{{ q.title }}</td>
               <td class="p-2 text-sm text-slate-600">{{ statusText(statuses[q.id]) }}</td>
               <td class="p-2 flex gap-2">
@@ -147,9 +151,9 @@ async function print(r) {
                 </button>
               </td>
             </tr>
-            <tr v-if="qStore.published.length === 0">
+            <tr v-if="started.length === 0">
               <td colspan="3" class="p-4 text-center text-slate-500">
-                Nu există chestionare.
+                Nu există chestionare începute.
               </td>
             </tr>
           </tbody>
