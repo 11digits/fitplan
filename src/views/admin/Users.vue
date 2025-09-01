@@ -21,13 +21,13 @@ onMounted(loadUsers)
 
 <template>
   <div class="p-4">
-    <h1 class="text-2xl font-bold mb-4">Users</h1>
+    <h1 class="text-2xl font-bold mb-4">Utilizatori</h1>
     <table class="min-w-full text-left">
       <thead>
         <tr>
           <th class="p-2 border">ID</th>
           <th class="p-2 border">Email</th>
-          <th class="p-2 border">Role</th>
+          <th class="p-2 border">Rol</th>
         </tr>
       </thead>
       <tbody>
@@ -36,8 +36,8 @@ onMounted(loadUsers)
           <td class="p-2 border">{{ u.email }}</td>
           <td class="p-2 border">
             <select v-model="u.role" @change="changeRole(u, u.role)" class="border p-1">
-              <option value="customer">customer</option>
-              <option value="admin">admin</option>
+              <option value="customer">client</option>
+              <option value="admin">administrator</option>
             </select>
           </td>
         </tr>

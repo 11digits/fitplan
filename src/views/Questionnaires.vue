@@ -27,7 +27,7 @@ async function loadStatuses() {
 }
 
 function statusText(v) {
-  if (v === 'admin') return 'admin'
+  if (v === 'admin') return 'administrator'
   if (v === 'customer') return 'completat'
   return 'necompletat'
 }
