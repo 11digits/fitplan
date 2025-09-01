@@ -1,12 +1,14 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import { useQuestionnaireStore } from '../stores/questionnaires'
 import { RouterLink } from 'vue-router'
 import { db } from '../firebase'
 import { ref as dbRef, get } from 'firebase/database'
+import { useUserStore } from '../stores/user'
 
 const qStore = useQuestionnaireStore()
-const email = ref('')
+const userStore = useUserStore()
+const email = computed(() => userStore.profile?.email || '')
 const statuses = ref({})
 const mode = ref(null)
 
@@ -14,22 +16,33 @@ const incomplete = computed(() =>
   qStore.published.filter((q) => !statuses.value[q.id])
 )
 
-onMounted(() => qStore.fetchPublished())
+onMounted(() => {
+  qStore.fetchPublished()
+  if (email.value) loadStatuses()
+})
 
-async function loadStatuses() {
-  if (!email.value) return
-  const snap = await get(dbRef(db, 'responses'))
-  const all = snap.exists()
-    ? Object.entries(snap.val()).map(([id, v]) => ({ id, ...v }))
-    : []
-  const filtered = all.filter((r) => r.customerEmail === email.value)
-  const map = {}
-  for (const r of filtered) {
-    map[r.questionnaireId] =
-      r.adminAnswers && Object.keys(r.adminAnswers).length > 0 ? 'admin' : 'customer'
+watch(() => email.value, (val) => {
+  if (val) loadStatuses()
+})
+
+watch(mode, (val) => {
+  if (val && email.value) loadStatuses()
+})
+
+  async function loadStatuses() {
+    if (!email.value) return
+    const snap = await get(dbRef(db, 'responses'))
+    const all = snap.exists()
+      ? Object.entries(snap.val()).map(([id, v]) => ({ id, ...v }))
+      : []
+    const filtered = all.filter((r) => r.customerEmail === email.value)
+    const map = {}
+    for (const r of filtered) {
+      map[r.questionnaireId] =
+        r.adminAnswers && Object.keys(r.adminAnswers).length > 0 ? 'admin' : 'customer'
+    }
+    statuses.value = map
   }
-  statuses.value = map
-}
 
 function statusText(v) {
   if (v === 'admin') return 'administrator'
@@ -61,62 +74,42 @@ function statusText(v) {
       <h1 class="text-2xl font-bold mb-4 text-center">
         {{ mode === 'resume' ? 'Reia/Vizualizează chestionarul' : 'Începe chestionar nou' }}
       </h1>
-      <div class="mb-4 max-w-sm mx-auto">
-        <label class="block mb-1">Email</label>
-        <input
-          v-model="email"
-          type="email"
-          class="border border-gray-300 rounded w-full mb-2 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-        <div class="flex items-center gap-4">
-          <button
-            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
-            @click="loadStatuses"
-          >
-            Încarcă
-          </button>
+        <div class="mb-4 max-w-sm mx-auto">
           <RouterLink to="/results" class="text-blue-600 underline"
             >Rezultatele tale</RouterLink
           >
         </div>
-      </div>
       <div v-if="mode === 'resume'">
-        <table class="w-full max-w-xl mx-auto text-left border">
-          <thead>
-            <tr class="border-b">
-              <th class="p-2">Chestionar</th>
-              <th class="p-2">Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="q in qStore.published" :key="q.id" class="border-b last:border-b-0">
-              <td class="p-2">
-                <RouterLink
-                  :to="`/run/${q.id}?email=${encodeURIComponent(email)}`"
-                  class="text-blue-600 underline"
-                >
-                  {{ q.title }}
-                </RouterLink>
-              </td>
-              <td class="p-2 text-sm text-slate-600">
-                {{ statusText(statuses[q.id]) }}
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <div v-else>
-        <ul class="max-w-sm mx-auto">
-          <li v-for="q in incomplete" :key="q.id" class="mb-2">
-            <RouterLink
-              :to="`/run/${q.id}?email=${encodeURIComponent(email)}`"
-              class="text-blue-600 underline"
-            >
-              {{ q.title }}
-            </RouterLink>
-          </li>
-        </ul>
-      </div>
+          <table class="w-full max-w-xl mx-auto text-left border">
+            <thead>
+              <tr class="border-b">
+                <th class="p-2">Chestionar</th>
+                <th class="p-2">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="q in qStore.published" :key="q.id" class="border-b last:border-b-0">
+                <td class="p-2">
+                  <RouterLink :to="`/run/${q.id}`" class="text-blue-600 underline">
+                    {{ q.title }}
+                  </RouterLink>
+                </td>
+                <td class="p-2 text-sm text-slate-600">
+                  {{ statusText(statuses[q.id]) }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div v-else>
+          <ul class="max-w-sm mx-auto">
+            <li v-for="q in incomplete" :key="q.id" class="mb-2">
+              <RouterLink :to="`/run/${q.id}`" class="text-blue-600 underline">
+                {{ q.title }}
+              </RouterLink>
+            </li>
+          </ul>
+        </div>
       <button class="mt-4 text-blue-600 underline" @click="mode = null">Înapoi</button>
     </div>
   </div>

@@ -16,7 +16,8 @@ export const useResponseStore = defineStore('responses', () => {
   const answers = ref({})
   const adminAnswers = ref({})
 
-  async function start(questionnaireId, email) {
+  async function start(questionnaireId) {
+    const email = userStore.profile?.email || ''
     const resRef = push(dbRef(db, 'responses'))
     responseId.value = resRef.key
     customerEmail.value = email

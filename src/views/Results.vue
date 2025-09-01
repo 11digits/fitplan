@@ -1,18 +1,25 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import { db } from '../firebase'
 import { ref as dbRef, get } from 'firebase/database'
 import { useQuestionnaireStore } from '../stores/questionnaires'
+import { useUserStore } from '../stores/user'
 import jsPDF from 'jspdf'
 
-const email = ref('')
 const responses = ref([])
 const questionnaires = ref({})
 const qStore = useQuestionnaireStore()
+const userStore = useUserStore()
+const email = computed(() => userStore.profile?.email || '')
 
 onMounted(async () => {
   const qSnap = await get(dbRef(db, 'questionnaires'))
   questionnaires.value = qSnap.exists() ? qSnap.val() : {}
+  if (email.value) load()
+})
+
+watch(() => email.value, (val) => {
+  if (val) load()
 })
 
 function titleOf(id) {
@@ -64,20 +71,6 @@ async function print(r) {
 <template>
   <div class="p-4">
     <h1 class="text-2xl font-bold mb-4">Rezultatele tale</h1>
-    <div class="mb-4 max-w-sm">
-      <label class="block mb-1">Email</label>
-      <input
-        v-model="email"
-        type="email"
-        class="border border-gray-300 rounded w-full mb-2 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-      />
-      <button
-        class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
-        @click="load"
-      >
-        Încarcă
-      </button>
-    </div>
     <ul>
       <li
         v-for="r in responses"
