@@ -57,8 +57,10 @@ export const useUserStore = defineStore('user', () => {
     await fetchProfile(cred.user.uid)
   }
 
-  function logout() {
-    return signOut(auth)
+  async function logout() {
+    await signOut(auth)
+    authUser.value = null
+    profile.value = null
   }
 
   const isAdmin = computed(() => profile.value?.role === 'admin')
