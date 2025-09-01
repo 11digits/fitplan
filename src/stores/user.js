@@ -10,12 +10,18 @@ import {
 import { ref as dbRef, set, get } from 'firebase/database'
 
 export const useUserStore = defineStore('user', () => {
-  const authUser = ref(null)
-  const profile = ref(null)
+  // hydrate from localStorage so routing guards work before Firebase init
+  const storedUser = localStorage.getItem('authUser')
+  const storedProfile = localStorage.getItem('profile')
+  const authUser = ref(storedUser ? JSON.parse(storedUser) : null)
+  const profile = ref(storedProfile ? JSON.parse(storedProfile) : null)
 
   async function fetchProfile(uid) {
     const snap = await get(dbRef(db, `users/${uid}`))
     profile.value = snap.exists() ? snap.val() : null
+    if (profile.value) {
+      localStorage.setItem('profile', JSON.stringify(profile.value))
+    }
   }
 
   async function ensureDefaultAdmin() {
@@ -40,8 +46,17 @@ export const useUserStore = defineStore('user', () => {
 
   onAuthStateChanged(auth, async (u) => {
     authUser.value = u
-    if (u) await fetchProfile(u.uid)
-    else profile.value = null
+    if (u) {
+      localStorage.setItem(
+        'authUser',
+        JSON.stringify({ uid: u.uid, email: u.email })
+      )
+      await fetchProfile(u.uid)
+    } else {
+      profile.value = null
+      localStorage.removeItem('authUser')
+      localStorage.removeItem('profile')
+    }
   })
 
   ensureDefaultAdmin()
@@ -61,6 +76,8 @@ export const useUserStore = defineStore('user', () => {
     await signOut(auth)
     authUser.value = null
     profile.value = null
+    localStorage.removeItem('authUser')
+    localStorage.removeItem('profile')
   }
 
   const isAdmin = computed(() => profile.value?.role === 'admin')
