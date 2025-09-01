@@ -46,6 +46,12 @@ async function logout() {
           class="hover:underline"
           >Login</RouterLink
         >
+        <RouterLink
+          v-if="!userStore.authUser"
+          to="/register"
+          class="hover:underline"
+          >Register</RouterLink
+        >
         <button
           v-else
           @click="logout"

@@ -39,18 +39,18 @@ function statusText(v) {
 </script>
 
 <template>
-  <div class="p-4">
-    <div v-if="!mode">
-      <h1 class="text-2xl font-bold mb-4">Începe chestionarul</h1>
-      <div class="flex flex-col gap-4 max-w-sm">
+  <div class="p-4 max-w-xl mx-auto">
+    <div v-if="!mode" class="space-y-6 text-center">
+      <h1 class="text-2xl font-bold">Începe chestionarul</h1>
+      <div class="flex flex-col gap-4">
         <button
-          class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+          class="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
           @click="mode = 'resume'"
         >
           Reia/Vizualizează chestionar
         </button>
         <button
-          class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
+          class="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
           @click="mode = 'new'"
         >
           Începe chestionar nou
@@ -58,10 +58,10 @@ function statusText(v) {
       </div>
     </div>
     <div v-else>
-      <h1 class="text-2xl font-bold mb-4">
+      <h1 class="text-2xl font-bold mb-4 text-center">
         {{ mode === 'resume' ? 'Reia/Vizualizează chestionarul' : 'Începe chestionar nou' }}
       </h1>
-      <div class="mb-4 max-w-sm">
+      <div class="mb-4 max-w-sm mx-auto">
         <label class="block mb-1">Email</label>
         <input
           v-model="email"
@@ -81,7 +81,7 @@ function statusText(v) {
         </div>
       </div>
       <div v-if="mode === 'resume'">
-        <table class="w-full max-w-xl text-left border">
+        <table class="w-full max-w-xl mx-auto text-left border">
           <thead>
             <tr class="border-b">
               <th class="p-2">Chestionar</th>
@@ -106,7 +106,7 @@ function statusText(v) {
         </table>
       </div>
       <div v-else>
-        <ul>
+        <ul class="max-w-sm mx-auto">
           <li v-for="q in incomplete" :key="q.id" class="mb-2">
             <RouterLink
               :to="`/run/${q.id}?email=${encodeURIComponent(email)}`"
