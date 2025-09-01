@@ -1,11 +1,12 @@
 <script setup>
 import { ref } from 'vue'
-import { useRouter, RouterLink } from 'vue-router'
+import { useRouter } from 'vue-router'
 import { useUserStore } from '../stores/user'
 import Swal from 'sweetalert2'
 
 const email = ref('')
 const password = ref('')
+const confirm = ref('')
 const router = useRouter()
 const userStore = useUserStore()
 
@@ -14,11 +15,15 @@ async function submit() {
     Swal.fire('Date lipsă', 'Introduceți emailul și parola.', 'warning')
     return
   }
+  if (password.value !== confirm.value) {
+    Swal.fire('Parole diferite', 'Parolele nu se potrivesc.', 'warning')
+    return
+  }
   try {
-    await userStore.login(email.value, password.value)
-    router.push(userStore.isAdmin ? '/admin' : '/')
+    await userStore.register(email.value, password.value)
+    router.push('/')
   } catch (e) {
-    Swal.fire('Autentificare eșuată', e.message, 'error')
+    Swal.fire('Înregistrare eșuată', e.message, 'error')
   }
 }
 </script>
@@ -26,7 +31,7 @@ async function submit() {
 <template>
   <div class="max-w-md mx-auto mt-10 shadow-lg rounded-lg overflow-hidden">
     <div class="bg-slate-800 text-white text-center py-4 text-2xl font-bold">
-      Autentificare
+      Înregistrare
     </div>
     <div class="p-6 bg-white">
       <form @submit.prevent="submit" class="space-y-4">
@@ -42,19 +47,19 @@ async function submit() {
           placeholder="Parolă"
           class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
+        <input
+          v-model="confirm"
+          type="password"
+          placeholder="Confirmare parolă"
+          class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
         <button
           type="submit"
           class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded"
         >
-          Continuă
+          Creează cont
         </button>
       </form>
-      <p class="mt-4 text-center">
-        Nu ai cont?
-        <RouterLink to="/register" class="text-blue-600 underline"
-          >Înregistrează-te</RouterLink
-        >
-      </p>
     </div>
   </div>
 </template>
