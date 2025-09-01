@@ -41,9 +41,12 @@ async function loadStatuses() {
   const map = {}
   const resp = {}
   for (const r of filtered) {
-    map[r.questionnaireId] =
-      r.adminAnswers && Object.keys(r.adminAnswers).length > 0 ? 'admin' : 'customer'
-    resp[r.questionnaireId] = r
+    const hasAdmin = r.adminAnswers && Object.keys(r.adminAnswers).length > 0
+    const hasCustomer = r.answers && Object.keys(r.answers).length > 0
+    if (hasAdmin || hasCustomer) {
+      map[r.questionnaireId] = hasAdmin ? 'admin' : 'customer'
+      resp[r.questionnaireId] = r
+    }
   }
   statuses.value = map
   responses.value = resp
@@ -136,7 +139,7 @@ async function print(r) {
                   Editează
                 </RouterLink>
                 <button
-                  v-if="responses[q.id]?.submittedAt"
+                  v-if="responses[q.id]"
                   class="px-2 py-1 bg-slate-200 hover:bg-slate-300 rounded text-sm"
                   @click="print(responses[q.id])"
                 >

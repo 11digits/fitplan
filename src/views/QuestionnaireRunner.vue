@@ -40,7 +40,7 @@ const visibleSections = computed(() =>
 </script>
 
 <template>
-  <div class="p-4" v-if="qStore.current">
+  <div class="p-4 max-w-2xl mx-auto" v-if="qStore.current">
   <div v-if="started">
     <h1 class="text-2xl font-bold mb-4">{{ qStore.current.title }}</h1>
     <div
