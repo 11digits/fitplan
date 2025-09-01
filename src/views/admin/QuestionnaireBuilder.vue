@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute, useRouter, RouterLink } from 'vue-router'
 import Swal from 'sweetalert2'
 import { db } from '../../firebase'
 import { ref as dbRef, push, set, update, get, remove } from 'firebase/database'
@@ -14,6 +14,8 @@ const newSectionTitle = ref('')
 const newSectionAdminOnly = ref(false)
 const questions = ref([])
 const newQuestions = ref({})
+const newQuestionTypes = ref({})
+const newQuestionOptions = ref({})
 
 onMounted(async () => {
   if (route.params.id) {
@@ -67,7 +69,12 @@ async function addSection() {
     order: sections.value.length + 1,
     adminOnly: newSectionAdminOnly.value
   })
-  sections.value.push({ id: newRef.key, title: newSectionTitle.value, order: sections.value.length + 1, adminOnly: newSectionAdminOnly.value })
+  sections.value.push({
+    id: newRef.key,
+    title: newSectionTitle.value,
+    order: sections.value.length + 1,
+    adminOnly: newSectionAdminOnly.value
+  })
   newSectionTitle.value = ''
   newSectionAdminOnly.value = false
   Swal.fire('Adăugat', 'Secțiune adăugată', 'success')
@@ -87,21 +94,28 @@ async function addQuestion(sectionId) {
     Swal.fire('Întrebare lipsă', 'Enunțul întrebării este necesar', 'warning')
     return
   }
+  const type = newQuestionTypes.value[sectionId] || 'text'
+  const optsStr = newQuestionOptions.value[sectionId] || ''
+  const options = type === 'text' ? [] : optsStr.split(',').map((o) => o.trim()).filter((o) => o)
   const newRef = push(dbRef(db, 'questions'))
   await set(newRef, {
     sectionId,
     prompt,
     order: questionsBySection(sectionId).length + 1,
-    type: 'text'
+    type,
+    options
   })
   questions.value.push({
     id: newRef.key,
     sectionId,
     prompt,
     order: questionsBySection(sectionId).length + 1,
-    type: 'text'
+    type,
+    options
   })
   newQuestions.value[sectionId] = ''
+  newQuestionTypes.value[sectionId] = 'text'
+  newQuestionOptions.value[sectionId] = ''
   Swal.fire('Adăugat', 'Întrebare adăugată', 'success')
 }
 
@@ -133,51 +147,80 @@ async function deleteQuestionnaire() {
 
 <template>
   <div class="p-4">
-    <h1 class="text-xl font-bold mb-4">Editor chestionar</h1>
-    <div class="mb-4">
-      <label class="block mb-1">Titlu</label>
-      <input v-model="questionnaire.title" class="border rounded p-2 w-full" />
-    </div>
-    <div class="mb-4">
-      <label class="block mb-1">Descriere</label>
-      <textarea v-model="questionnaire.description" class="border rounded p-2 w-full" />
-    </div>
-    <div class="mb-4">
-      <label class="block mb-1">Stare</label>
-      <select v-model="questionnaire.status" class="border rounded p-2 w-full">
-        <option value="draft">Schiță</option>
-        <option value="published">Publicat</option>
-      </select>
-    </div>
-    <div class="flex gap-2">
-      <button class="bg-green-600 text-white px-4 py-2 rounded" @click="saveQuestionnaire">Salvează</button>
-      <button v-if="route.params.id" class="bg-red-600 text-white px-4 py-2 rounded" @click="deleteQuestionnaire">Șterge</button>
-    </div>
-
-    <div class="mt-8">
-      <h2 class="font-semibold mb-2">Secțiuni</h2>
-      <div v-for="s in sections" :key="s.id" class="mb-4 border rounded p-2">
-        <div class="flex items-center justify-between mb-2">
-          <h3 class="font-medium">{{ s.title }}</h3>
-          <label class="flex items-center text-sm gap-1">
-            <input type="checkbox" v-model="s.adminOnly" @change="updateSectionAdmin(s)" />
-            Doar admin
-          </label>
-        </div>
-        <ul class="mb-2 pl-4 list-disc">
-          <li v-for="q in questionsBySection(s.id)" :key="q.id" class="mb-1">{{ q.prompt }}</li>
-        </ul>
-        <div class="flex gap-2">
-          <input v-model="newQuestions[s.id]" placeholder="Enunț întrebare nouă" class="border p-2 flex-1" />
-          <button class="bg-blue-600 text-white px-3 rounded" @click="addQuestion(s.id)">Adaugă</button>
-        </div>
+    <div class="max-w-3xl mx-auto bg-white p-6 rounded shadow">
+      <RouterLink to="/admin" class="text-blue-600 underline mb-4 inline-block">
+        &larr; Înapoi
+      </RouterLink>
+      <h1 class="text-xl font-bold mb-4 text-center">Editor chestionar</h1>
+      <div class="mb-4">
+        <label class="block mb-1">Titlu</label>
+        <input v-model="questionnaire.title" class="border rounded p-2 w-full" />
       </div>
-      <div class="flex gap-2 mt-4 items-center">
-        <input v-model="newSectionTitle" placeholder="Titlu secțiune nouă" class="border p-2 flex-1" />
-        <label class="flex items-center text-sm gap-1">
-          <input type="checkbox" v-model="newSectionAdminOnly" /> Doar admin
-        </label>
-        <button class="bg-blue-600 text-white px-3 rounded" @click="addSection">Adaugă secțiune</button>
+      <div class="mb-4">
+        <label class="block mb-1">Descriere</label>
+        <textarea v-model="questionnaire.description" class="border rounded p-2 w-full" />
+      </div>
+      <div class="mb-4">
+        <label class="block mb-1">Stare</label>
+        <select v-model="questionnaire.status" class="border rounded p-2 w-full">
+          <option value="draft">Schiță</option>
+          <option value="published">Publicat</option>
+        </select>
+      </div>
+      <div class="flex gap-2 mb-6">
+        <button class="bg-green-600 text-white px-4 py-2 rounded" @click="saveQuestionnaire">Salvează</button>
+        <button v-if="route.params.id" class="bg-red-600 text-white px-4 py-2 rounded" @click="deleteQuestionnaire">Șterge</button>
+      </div>
+
+      <div class="mt-8">
+        <h2 class="font-semibold mb-2">Secțiuni</h2>
+        <div v-for="s in sections" :key="s.id" class="mb-4 border rounded p-2">
+          <div class="flex items-center justify-between mb-2">
+            <h3 class="font-medium">{{ s.title }}</h3>
+            <label class="flex items-center text-sm gap-1">
+              <input type="checkbox" v-model="s.adminOnly" @change="updateSectionAdmin(s)" />
+              Doar admin
+            </label>
+          </div>
+          <ul class="mb-2 pl-4 list-disc">
+            <li
+              v-for="q in questionsBySection(s.id)"
+              :key="q.id"
+              class="mb-1"
+            >
+              {{ q.prompt }}
+              <span class="text-xs text-slate-600">({{ q.type }})</span>
+            </li>
+          </ul>
+          <div class="flex flex-col sm:flex-row gap-2">
+            <input
+              v-model="newQuestions[s.id]"
+              placeholder="Enunț întrebare nouă"
+              class="border p-2 flex-1"
+            />
+            <select v-model="newQuestionTypes[s.id]" class="border p-2">
+              <option value="text">Text</option>
+              <option value="radio">Opțiuni (radio)</option>
+              <option value="checkbox">Opțiuni multiple</option>
+            </select>
+            <input
+              v-if="newQuestionTypes[s.id] && newQuestionTypes[s.id] !== 'text'"
+              v-model="newQuestionOptions[s.id]"
+              placeholder="Opțiuni separate prin virgulă"
+              class="border p-2 flex-1"
+            />
+            <button class="bg-blue-600 text-white px-3 rounded" @click="addQuestion(s.id)">
+              Adaugă
+            </button>
+          </div>
+        </div>
+        <div class="flex flex-col sm:flex-row gap-2 mt-4 items-center">
+          <input v-model="newSectionTitle" placeholder="Titlu secțiune nouă" class="border p-2 flex-1" />
+          <label class="flex items-center text-sm gap-1">
+            <input type="checkbox" v-model="newSectionAdminOnly" /> Doar admin
+          </label>
+          <button class="bg-blue-600 text-white px-3 rounded" @click="addSection">Adaugă secțiune</button>
+        </div>
       </div>
     </div>
   </div>

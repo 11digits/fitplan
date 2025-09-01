@@ -78,7 +78,8 @@ async function print(r) {
     doc.setFont(undefined, 'normal')
     for (const q of qStore.questionsBySection(section.id)) {
       const source = section.adminOnly ? r.adminAnswers || {} : r.answers || {}
-      const ans = source[q.id]?.value || source[q.id] || ''
+      const raw = source[q.id]?.value || source[q.id] || ''
+      const ans = Array.isArray(raw) ? raw.join(', ') : raw
       const line = `${q.prompt}: ${ans}`
       const lines = doc.splitTextToSize(line, 190)
       for (const l of lines) {
