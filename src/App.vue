@@ -17,27 +17,29 @@ async function logout() {
     <nav
       class="bg-slate-800 text-white p-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4 shadow"
     >
-      <RouterLink to="/" class="hover:underline font-semibold text-xl">
-        Fit Plan - Alexandra Brad PT
-      </RouterLink>
-      <RouterLink
-        to="/admin"
-        class="hover:underline"
-        v-if="userStore.isAdmin"
-        >Admin</RouterLink
-      >
-      <RouterLink
-        v-if="userStore.isAdmin"
-        to="/admin/questionnaires"
-        class="hover:underline"
-        >Add Questionnaire</RouterLink
-      >
-      <RouterLink
-        v-if="userStore.isAdmin"
-        to="/admin/results"
-        class="hover:underline"
-        >Results</RouterLink
-      >
+      <template v-if="userStore.authUser">
+        <RouterLink to="/" class="hover:underline font-semibold text-xl">
+          Fit Plan - Alexandra Brad PT
+        </RouterLink>
+        <RouterLink
+          to="/admin"
+          class="hover:underline"
+          v-if="userStore.isAdmin"
+          >Admin</RouterLink
+        >
+        <RouterLink
+          v-if="userStore.isAdmin"
+          to="/admin/questionnaires"
+          class="hover:underline"
+          >Add Questionnaire</RouterLink
+        >
+        <RouterLink
+          v-if="userStore.isAdmin"
+          to="/admin/results"
+          class="hover:underline"
+          >Results</RouterLink
+        >
+      </template>
 
       <div class="sm:ml-auto flex gap-4 items-center">
         <RouterLink
