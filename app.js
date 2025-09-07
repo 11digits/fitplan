@@ -52,7 +52,7 @@ $(function() {
     $('#status').text(stage.type === 'exercise' ? `Exercise ${stage.number}` : 'Pause');
     updateDisplay();
 
-    if (stage.type === 'exercise') {
+    if ((current === 1 && stage.type !== 'pause') || stage.type === 'exercise') {
       sounds.start.play();
     } else {
       sounds.pause.play();
