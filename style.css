@@ -2,11 +2,13 @@ body {
   background-color: rgb(13,13,13);
   color: #e0e0e0;
   margin: 0;
-  padding: env(safe-area-inset-top, 1rem) 
-           env(safe-area-inset-right, 1rem) 
-           env(safe-area-inset-bottom, 1rem) 
-           env(safe-area-inset-left, 1rem);
-  /* fallback padding is 1rem if no safe-area defined */
+  padding: env(safe-area-inset-top, 0px) 
+           env(safe-area-inset-right, 0px) 
+           env(safe-area-inset-bottom, 0px) 
+           env(safe-area-inset-left, 0px);
+  background:    
+    linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 1)), 
+    url("back.jpg") center/cover no-repeat fixed;
 }
 
 .card {
@@ -30,4 +32,8 @@ body {
 .disabled {
   pointer-events: none;
   opacity: 0.5;
+}
+
+.pb-6 {
+    padding-bottom: 4rem !important;
 }
