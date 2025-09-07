@@ -97,11 +97,17 @@ $(function() {
       clearInterval(timer);
       timer = null;
       $(this).html('<i class="bi bi-play-fill"></i> Resume');
-      sounds.stop.play();
+      sounds.start.pause();
+      sounds.start.currentTime = 0;
+      sounds.pause.currentTime = 0;
+      sounds.pause.play();
     } else {
       startTimer();
       $(this).html('<i class="bi bi-pause-fill"></i> Pause');
-      sounds.stop.play();
+      sounds.pause.pause();
+      sounds.pause.currentTime = 0;
+      sounds.start.currentTime = 0;
+      sounds.start.play();
     }
   });
 
