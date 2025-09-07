@@ -9,8 +9,12 @@ body {
 }
 
 #counter {
-  font-size: 20vh;
+  font-size: 40vh;
   line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 60vh;
 }
 
 .digital {
