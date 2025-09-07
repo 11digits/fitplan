@@ -25,6 +25,7 @@ $(function() {
   }
 
   let stages = [], current = 0, timer = null, timeLeft = 0, stage = null, countdownInterval = null;
+  let globalInterval = null, globalStartTime = 0, globalElapsed = 0;
 
   function padTo2Digits(num) {
     return num.toString().padStart(2, '0');
@@ -32,6 +33,40 @@ $(function() {
 
   function updateDisplay() {
     $('#counter').text(padTo2Digits(timeLeft));
+  }
+
+  function updateGlobalDisplay() {
+    const elapsed = globalElapsed + (Date.now() - globalStartTime);
+    const hours = Math.floor(elapsed / 3600000);
+    const minutes = Math.floor((elapsed % 3600000) / 60000);
+    const seconds = Math.floor((elapsed % 60000) / 1000);
+    const milliseconds = elapsed % 1000;
+    $('#global-counter').text(
+      `${padTo2Digits(hours)}:${padTo2Digits(minutes)}:${padTo2Digits(seconds)}.${milliseconds.toString().padStart(3, '0')}`
+    );
+  }
+
+  function startGlobalTimer() {
+    globalStartTime = Date.now();
+    updateGlobalDisplay();
+    globalInterval = setInterval(updateGlobalDisplay, 10);
+  }
+
+  function pauseGlobalTimer() {
+    clearInterval(globalInterval);
+    globalElapsed += Date.now() - globalStartTime;
+  }
+
+  function resumeGlobalTimer() {
+    startGlobalTimer();
+  }
+
+  function stopGlobalTimer() {
+    clearInterval(globalInterval);
+    globalInterval = null;
+    globalStartTime = 0;
+    globalElapsed = 0;
+    $('#global-counter').text('00:00:00.000');
   }
 
   function startTimer() {
@@ -62,6 +97,7 @@ $(function() {
       $('#counter').text('00');
       stages = [];
       disableNoSleep();
+      stopGlobalTimer();
       return;
     }
 
@@ -116,6 +152,8 @@ $(function() {
       $(this).prop('disabled', true).removeClass('btn-success').addClass('btn-warning').html('<i class="bi bi-pause-fill"></i> Pause');
       $('#stopBtn').prop('disabled', false);
       $('#setup-form').addClass('disabled');
+      globalElapsed = 0;
+      startGlobalTimer();
       initialCountdown();
       enableNoSleep();
     } else if (timer) {
@@ -127,6 +165,7 @@ $(function() {
       sounds.start.currentTime = 0;
       sounds.pause.currentTime = 0;
       sounds.pause.play();
+      pauseGlobalTimer();
     } else {
       startTimer();
       enableNoSleep();
@@ -135,6 +174,7 @@ $(function() {
       sounds.pause.currentTime = 0;
       sounds.start.currentTime = 0;
       sounds.start.play();
+      resumeGlobalTimer();
     }
   });
 
@@ -155,5 +195,6 @@ $(function() {
     sounds.stop.play();
     stages = [];
     disableNoSleep();
+    stopGlobalTimer();
   });
 });
