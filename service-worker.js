@@ -9,6 +9,7 @@ const ASSETS = [
   "/start.mp3",
   "/pause.mp3",
   "/stop.mp3",
+  "/back.jpg",
   "https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css",
   "https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js",
   "https://code.jquery.com/jquery-3.7.1.min.js",
