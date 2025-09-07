@@ -13,6 +13,7 @@ const ASSETS = [
   "https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css",
   "https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js",
   "https://code.jquery.com/jquery-3.7.1.min.js",
+  "https://cdnjs.cloudflare.com/ajax/libs/nosleep/0.12.0/NoSleep.min.js",
   "https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap"
 ];
 
