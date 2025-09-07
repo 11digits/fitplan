@@ -7,6 +7,23 @@ $(function() {
     countdown: new Audio('321-counter.mp3')
   };
 
+  const noSleep = new NoSleep();
+  let wakeLockEnabled = false;
+
+  function enableNoSleep() {
+    if (!wakeLockEnabled) {
+      noSleep.enable();
+      wakeLockEnabled = true;
+    }
+  }
+
+  function disableNoSleep() {
+    if (wakeLockEnabled) {
+      noSleep.disable();
+      wakeLockEnabled = false;
+    }
+  }
+
   let stages = [], current = 0, timer = null, timeLeft = 0, stage = null, countdownInterval = null;
 
   function padTo2Digits(num) {
@@ -44,6 +61,7 @@ $(function() {
       $('#setup-form').removeClass('disabled');
       $('#counter').text('00');
       stages = [];
+      disableNoSleep();
       return;
     }
 
@@ -99,9 +117,11 @@ $(function() {
       $('#stopBtn').prop('disabled', false);
       $('#setup-form').addClass('disabled');
       initialCountdown();
+      enableNoSleep();
     } else if (timer) {
       clearInterval(timer);
       timer = null;
+      disableNoSleep();
       $(this).html('<i class="bi bi-play-fill"></i> Resume');
       sounds.start.pause();
       sounds.start.currentTime = 0;
@@ -109,6 +129,7 @@ $(function() {
       sounds.pause.play();
     } else {
       startTimer();
+      enableNoSleep();
       $(this).html('<i class="bi bi-pause-fill"></i> Pause');
       sounds.pause.pause();
       sounds.pause.currentTime = 0;
@@ -133,5 +154,6 @@ $(function() {
     $('#setup-form').removeClass('disabled');
     sounds.stop.play();
     stages = [];
+    disableNoSleep();
   });
 });
