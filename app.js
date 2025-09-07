@@ -38,7 +38,7 @@ $(function() {
       $('#toggleBtn').removeClass('btn-warning').addClass('btn-success').html('<i class="bi bi-play-fill"></i> Start').prop('disabled', false);
       $('#stopBtn').prop('disabled', true);
       $('#setup-form').removeClass('d-none');
-      $('#counter').text('STOPPED');
+      $('#counter').text('00');
       stages = [];
       return;
     }
@@ -125,7 +125,7 @@ $(function() {
     $('#toggleBtn').removeClass('btn-warning').addClass('btn-success').html('<i class="bi bi-play-fill"></i> Start').prop('disabled', false);
     $('#stopBtn').prop('disabled', true);
     $('#status').text('Stopped');
-    $('#counter').text('STOPPED');
+    $('#counter').text('00');
     $('#setup-form').removeClass('d-none');
     sounds.stop.play();
     stages = [];
