@@ -35,9 +35,11 @@ $(function() {
     if (current >= stages.length) {
       $('#status').text('Done');
       sounds.stop.play();
-      $('#stopBtn, #pauseBtn').addClass('d-none');
-      $('#startBtn').prop('disabled', false);
+      $('#toggleBtn').removeClass('btn-warning').addClass('btn-success').html('<i class="bi bi-play-fill"></i> Start').prop('disabled', false);
+      $('#stopBtn').prop('disabled', true);
       $('#setup-form').removeClass('d-none');
+      $('#counter').text('STOPPED');
+      stages = [];
       return;
     }
 
@@ -68,35 +70,32 @@ $(function() {
       } else {
         clearInterval(countdownInterval);
         countdownInterval = null;
-        $('#pauseBtn').prop('disabled', false);
+        $('#toggleBtn').prop('disabled', false);
         runStage();
       }
     }, 1000);
   }
 
-  $('#startBtn').on('click', function() {
-    const stations = parseInt($('#stations').val(), 10);
-    const exercise = parseInt($('#exercise').val(), 10);
-    const pause = parseInt($('#pause').val(), 10);
+  $('#toggleBtn').on('click', function() {
+    if (stages.length === 0 && !timer && !countdownInterval) {
+      const stations = parseInt($('#stations').val(), 10);
+      const exercise = parseInt($('#exercise').val(), 10);
+      const pause = parseInt($('#pause').val(), 10);
 
-    stages = [];
-    for (let i = 1; i <= stations; i++) {
-      stages.push({ type: 'exercise', seconds: exercise, number: i });
-      if (i < stations) {
-        stages.push({ type: 'pause', seconds: pause });
+      stages = [];
+      for (let i = 1; i <= stations; i++) {
+        stages.push({ type: 'exercise', seconds: exercise, number: i });
+        if (i < stations) {
+          stages.push({ type: 'pause', seconds: pause });
+        }
       }
-    }
 
-    current = 0;
-    $('#startBtn').prop('disabled', true);
-    $('#stopBtn, #pauseBtn').removeClass('d-none');
-    $('#pauseBtn').prop('disabled', true);
-    $('#setup-form').addClass('d-none');
-    initialCountdown();
-  });
-
-  $('#pauseBtn').on('click', function() {
-    if (timer) {
+      current = 0;
+      $(this).prop('disabled', true).removeClass('btn-success').addClass('btn-warning').html('<i class="bi bi-pause-fill"></i> Pause');
+      $('#stopBtn').prop('disabled', false);
+      $('#setup-form').addClass('d-none');
+      initialCountdown();
+    } else if (timer) {
       clearInterval(timer);
       timer = null;
       $(this).html('<i class="bi bi-play-fill"></i> Resume');
@@ -123,12 +122,12 @@ $(function() {
     }
     sounds.countdown.pause();
     sounds.countdown.currentTime = 0;
-    $('#startBtn').prop('disabled', false);
-    $('#stopBtn, #pauseBtn').addClass('d-none');
-    $('#pauseBtn').html('<i class="bi bi-pause-fill"></i> Pause').prop('disabled', true);
+    $('#toggleBtn').removeClass('btn-warning').addClass('btn-success').html('<i class="bi bi-play-fill"></i> Start').prop('disabled', false);
+    $('#stopBtn').prop('disabled', true);
     $('#status').text('Stopped');
-    $('#counter').text('00');
+    $('#counter').text('STOPPED');
     $('#setup-form').removeClass('d-none');
     sounds.stop.play();
+    stages = [];
   });
 });
