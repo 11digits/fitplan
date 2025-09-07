@@ -20,3 +20,8 @@ body {
 .digital {
   font-family: 'Share Tech Mono', monospace;
 }
+
+.disabled {
+    pointer-events: none;
+    opacity: 0.5;
+}

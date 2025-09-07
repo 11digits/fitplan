@@ -9,8 +9,12 @@ $(function() {
 
   let stages = [], current = 0, timer = null, timeLeft = 0, stage = null, countdownInterval = null;
 
+  function padTo2Digits(num) {
+    return num.toString().padStart(2, '0');
+  }
+
   function updateDisplay() {
-    $('#counter').text(timeLeft.toString().padStart(2, '0'));
+    $('#counter').text(padTo2Digits(timeLeft));
   }
 
   function startTimer() {
@@ -37,7 +41,7 @@ $(function() {
       sounds.stop.play();
       $('#toggleBtn').removeClass('btn-warning').addClass('btn-success').html('<i class="bi bi-play-fill"></i> Start').prop('disabled', false);
       $('#stopBtn').prop('disabled', true);
-      $('#setup-form').removeClass('d-none');
+      $('#setup-form').removeClass('disabled');
       $('#counter').text('00');
       stages = [];
       return;
@@ -60,13 +64,13 @@ $(function() {
   function initialCountdown() {
     let count = 3;
     $('#status').text('Get Ready');
-    $('#counter').text(count);
+    $('#counter').text(padTo2Digits(count));
     sounds.countdown.currentTime = 0;
     sounds.countdown.play();
     countdownInterval = setInterval(() => {
       count--;
       if (count > 0) {
-        $('#counter').text(count);
+        $('#counter').text(padTo2Digits(count));
       } else {
         clearInterval(countdownInterval);
         countdownInterval = null;
@@ -93,7 +97,7 @@ $(function() {
       current = 0;
       $(this).prop('disabled', true).removeClass('btn-success').addClass('btn-warning').html('<i class="bi bi-pause-fill"></i> Pause');
       $('#stopBtn').prop('disabled', false);
-      $('#setup-form').addClass('d-none');
+      $('#setup-form').addClass('disabled');
       initialCountdown();
     } else if (timer) {
       clearInterval(timer);
@@ -126,7 +130,7 @@ $(function() {
     $('#stopBtn').prop('disabled', true);
     $('#status').text('Stopped');
     $('#counter').text('00');
-    $('#setup-form').removeClass('d-none');
+    $('#setup-form').removeClass('disabled');
     sounds.stop.play();
     stages = [];
   });
