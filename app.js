@@ -129,6 +129,7 @@ $(function() {
         clearInterval(countdownInterval);
         countdownInterval = null;
         $('#toggleBtn').prop('disabled', false);
+        startGlobalTimer();
         runStage();
       }
     }, 1000);
@@ -152,8 +153,7 @@ $(function() {
       $(this).prop('disabled', true).removeClass('btn-success').addClass('btn-warning').html('<i class="bi bi-pause-fill"></i> Pause');
       $('#stopBtn').prop('disabled', false);
       $('#setup-form').addClass('disabled');
-      globalElapsed = 0;
-      startGlobalTimer();
+      globalElapsed = 0;     
       initialCountdown();
       enableNoSleep();
     } else if (timer) {

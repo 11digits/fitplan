@@ -28,11 +28,11 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 45vh;
+  height: 40vh;
 }
 
 #global-counter {
-  font-size: 5vh;
+  font-size: 3vh;
   line-height: 1;
 }
 
