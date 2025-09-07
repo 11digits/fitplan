@@ -7,7 +7,7 @@ $(function() {
     countdown: new Audio('321-counter.mp3')
   };
 
-  let stages = [], current = 0, timer = null, timeLeft = 0, stage = null;
+  let stages = [], current = 0, timer = null, timeLeft = 0, stage = null, countdownInterval = null;
 
   function updateDisplay() {
     $('#counter').text(timeLeft.toString().padStart(2, '0'));
@@ -61,12 +61,14 @@ $(function() {
     $('#counter').text(count);
     sounds.countdown.currentTime = 0;
     sounds.countdown.play();
-    const countdownInterval = setInterval(() => {
+    countdownInterval = setInterval(() => {
       count--;
       if (count > 0) {
         $('#counter').text(count);
       } else {
         clearInterval(countdownInterval);
+        countdownInterval = null;
+        $('#pauseBtn').prop('disabled', false);
         runStage();
       }
     }, 1000);
@@ -88,6 +90,7 @@ $(function() {
     current = 0;
     $('#startBtn').prop('disabled', true);
     $('#stopBtn, #pauseBtn').removeClass('d-none');
+    $('#pauseBtn').prop('disabled', true);
     $('#setup-form').addClass('d-none');
     initialCountdown();
   });
@@ -114,9 +117,15 @@ $(function() {
   $('#stopBtn').on('click', function() {
     clearInterval(timer);
     timer = null;
+    if (countdownInterval) {
+      clearInterval(countdownInterval);
+      countdownInterval = null;
+    }
+    sounds.countdown.pause();
+    sounds.countdown.currentTime = 0;
     $('#startBtn').prop('disabled', false);
     $('#stopBtn, #pauseBtn').addClass('d-none');
-    $('#pauseBtn').html('<i class="bi bi-pause-fill"></i> Pause');
+    $('#pauseBtn').html('<i class="bi bi-pause-fill"></i> Pause').prop('disabled', true);
     $('#status').text('Stopped');
     $('#counter').text('00');
     $('#setup-form').removeClass('d-none');
