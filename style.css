@@ -7,3 +7,12 @@ body {
   background-color: #1e1e1e;
   border: 1px solid #2c2c2c;
 }
+
+#counter {
+  font-size: 20vh;
+  line-height: 1;
+}
+
+.digital {
+  font-family: 'Share Tech Mono', monospace;
+}
