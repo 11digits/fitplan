@@ -49,7 +49,7 @@ $(function() {
 
     stage = stages[current];
     timeLeft = stage.seconds;
-    $('#status').text(stage.type === 'exercise' ? `Exercise ${stage.number}` : 'Pause');
+    $('#status').text(stage.type === 'exercise' ? `Exercise ${stage.number} / ${stage.stations}` : 'Pause');
     updateDisplay();
 
     if ((current === 1 && stage.type !== 'pause') || stage.type === 'exercise') {
@@ -88,7 +88,7 @@ $(function() {
 
       stages = [];
       for (let i = 1; i <= stations; i++) {
-        stages.push({ type: 'exercise', seconds: exercise, number: i });
+        stages.push({ type: 'exercise', seconds: exercise, number: i, stations: stations });
         if (i < stations) {
           stages.push({ type: 'pause', seconds: pause });
         }
