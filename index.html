@@ -20,29 +20,29 @@
   <meta name="theme-color" content="#121212">
   <link rel="apple-touch-icon" href="res/ios/180.png">
 </head>
-<body class="bg-dark text-light d-flex flex-column min-vh-100">
+<body class="text-light d-flex flex-column min-vh-100">
 
   <div class="container py-4 my-auto text-center">
-    <img src="res/android/android-launchericon-192-192.png" alt="Circuit Counter PRO logo" class="mb-4" width="192" height="192" />
+    <img src="logo-circuit-trs.png" alt="Circuit Counter PRO logo" class="mb-4" width="192" height="192" />
 
     <form id="setup-form" class="mb-4">
       <div class="row g-2">
         <div class="col">
-          <label for="stations" class="form-label">Exercises</label>
-          <input type="number" id="stations" class="form-control form-control-lg text-center" min="1" value="5">
+          <label for="stations" class="form-label">Number of exercises</label>
+          <input type="number" id="stations" class="form-control form-control-lg text-center" min="1" value="10">
         </div>
         <div class="col">
-          <label for="exercise" class="form-label">Exercise (sec)</label>
-          <input type="number" id="exercise" class="form-control form-control-lg text-center" min="1" value="30">
+          <label for="exercise" class="form-label">Exercise duration (sec)</label>
+          <input type="number" id="exercise" class="form-control form-control-lg text-center" min="1" value="40">
         </div>
         <div class="col">
-          <label for="pause" class="form-label">Pause (sec)</label>
-          <input type="number" id="pause" class="form-control form-control-lg text-center" min="1" value="15">
+          <label for="pause" class="form-label">Pause duration (sec)</label>
+          <input type="number" id="pause" class="form-control form-control-lg text-center" min="1" value="20">
         </div>
       </div>
     </form>
 
-    <div id="status" class="h3 mb-2"></div>
+    <div id="status" class="h3 mb-2">Stopped</div>
     <div id="counter" class="digital">00</div>
     <div class="d-flex gap-3 mt-3">
       <button type="button" id="toggleBtn" class="btn btn-success btn-lg flex-fill"><i class="bi bi-play-fill"></i> Start</button>
