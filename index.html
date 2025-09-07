@@ -26,26 +26,27 @@
     <h1 class="mb-4">Circuit Counter PRO</h1>
 
     <form id="setup-form" class="mb-4">
-      <div class="mb-3">
-        <label for="stations" class="form-label">Stations / Exercises</label>
-        <input type="number" id="stations" class="form-control" min="1" value="5">
+      <div class="row g-2">
+        <div class="col">
+          <label for="stations" class="form-label">Stations / Exercises</label>
+          <input type="number" id="stations" class="form-control form-control-lg text-center" min="1" value="5">
+        </div>
+        <div class="col">
+          <label for="exercise" class="form-label">Seconds per exercise</label>
+          <input type="number" id="exercise" class="form-control form-control-lg text-center" min="1" value="30">
+        </div>
+        <div class="col">
+          <label for="pause" class="form-label">Pause seconds</label>
+          <input type="number" id="pause" class="form-control form-control-lg text-center" min="1" value="15">
+        </div>
       </div>
-      <div class="mb-3">
-        <label for="exercise" class="form-label">Seconds per exercise</label>
-        <input type="number" id="exercise" class="form-control" min="1" value="30">
-      </div>
-      <div class="mb-3">
-        <label for="pause" class="form-label">Pause seconds</label>
-        <input type="number" id="pause" class="form-control" min="1" value="15">
-      </div>
-      <button type="button" id="startBtn" class="btn btn-success w-100"><i class="bi bi-play-fill"></i> Start</button>
     </form>
 
     <div id="status" class="h3 mb-2"></div>
-    <div id="counter" class="digital">00</div>
-    <div class="w-100">
-      <button type="button" id="pauseBtn" class="btn btn-warning w-100 mt-3 d-none"><i class="bi bi-pause-fill"></i> Pause</button>
-      <button type="button" id="stopBtn" class="btn btn-danger w-100 mt-2 d-none"><i class="bi bi-stop-fill"></i> Stop</button>
+    <div id="counter" class="digital">STOPPED</div>
+    <div class="d-flex gap-3 mt-3">
+      <button type="button" id="toggleBtn" class="btn btn-success btn-lg flex-fill"><i class="bi bi-play-fill"></i> Start</button>
+      <button type="button" id="stopBtn" class="btn btn-danger btn-lg flex-fill" disabled><i class="bi bi-stop-fill"></i> Stop</button>
     </div>
   </div>
 
