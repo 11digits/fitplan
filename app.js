@@ -11,6 +11,8 @@ $(function() {
   let wakeLockEnabled = false;
 
   function enableNoSleep() {
+    return false;
+
     if (!wakeLockEnabled) {
       noSleep.enable();
       wakeLockEnabled = true;
@@ -18,6 +20,8 @@ $(function() {
   }
 
   function disableNoSleep() {
+    return false;
+    
     if (wakeLockEnabled) {
       noSleep.disable();
       wakeLockEnabled = false;
