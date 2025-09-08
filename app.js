@@ -1,32 +1,13 @@
 $(function() {
   const sounds = {
-    start: new Audio('start.mp3'),
-    pause: new Audio('pause.mp3'),
-    stop: new Audio('stop.mp3'),
-    beep: new Audio('beep.mp3'),
-    countdown: new Audio('321-counter.mp3')
+    start: new Audio('sounds/start.mp3'),
+    pause: new Audio('sounds/pause.mp3'),
+    stop: new Audio('sounds/stop.mp3'),
+    beep: new Audio('sounds/beep.mp3'),
+    tick: new Audio('sounds/tick.mp3'),
+    silence: new Audio('sounds/silence.mp3'),
+    countdown: new Audio('sounds/321-counter.mp3')
   };
-
-  const noSleep = new NoSleep();
-  let wakeLockEnabled = false;
-
-  function enableNoSleep() {
-    return false;
-
-    if (!wakeLockEnabled) {
-      noSleep.enable();
-      wakeLockEnabled = true;
-    }
-  }
-
-  function disableNoSleep() {
-    return false;
-    
-    if (wakeLockEnabled) {
-      noSleep.disable();
-      wakeLockEnabled = false;
-    }
-  }
 
   let stages = [], current = 0, timer = null, timeLeft = 0, stage = null, countdownInterval = null;
   let globalInterval = null, globalStartTime = 0, globalElapsed = 0;
@@ -36,6 +17,7 @@ $(function() {
   }
 
   function updateDisplay() {
+    sounds.silence.play();
     $('#counter').text(padTo2Digits(timeLeft));
   }
 
@@ -100,7 +82,6 @@ $(function() {
       $('#setup-form').removeClass('disabled');
       $('#counter').text('00');
       stages = [];
-      disableNoSleep();
       stopGlobalTimer();
       return;
     }
@@ -159,11 +140,9 @@ $(function() {
       $('#setup-form').addClass('disabled');
       globalElapsed = 0;     
       initialCountdown();
-      enableNoSleep();
     } else if (timer) {
       clearInterval(timer);
       timer = null;
-      //disableNoSleep();
       $(this).html('<i class="bi bi-play-fill"></i> Resume');
       sounds.start.pause();
       sounds.start.currentTime = 0;
@@ -172,7 +151,6 @@ $(function() {
       pauseGlobalTimer();
     } else {
       startTimer();
-      enableNoSleep();
       $(this).html('<i class="bi bi-pause-fill"></i> Pause');
       sounds.pause.pause();
       sounds.pause.currentTime = 0;
@@ -198,7 +176,6 @@ $(function() {
     $('#setup-form').removeClass('disabled');
     sounds.stop.play();
     stages = [];
-    disableNoSleep();
     stopGlobalTimer();
   });
 });
