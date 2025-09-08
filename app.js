@@ -159,7 +159,7 @@ $(function() {
     } else if (timer) {
       clearInterval(timer);
       timer = null;
-      disableNoSleep();
+      //disableNoSleep();
       $(this).html('<i class="bi bi-play-fill"></i> Resume');
       sounds.start.pause();
       sounds.start.currentTime = 0;
